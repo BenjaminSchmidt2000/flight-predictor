@@ -1,5 +1,9 @@
 import os
 import pandas as pd
+import geopandas as gpd
+from shapely.geometry import Point
+import matplotlib.pyplot as plt
+from shapely.geometry import Point, LineString
 from urllib.request import urlretrieve
 from zipfile import ZipFile
 import math
@@ -62,7 +66,8 @@ class DataDownloader:
         lon2 = float(self.airports_df[self.airports_df["Name"] == airport2].iloc[:, 7])
         distance = haversine_distance(lat1, lon1, lat2, lon2)
         print(distance, "km")
-         def plot_airports_map(self, country):
+
+    def plot_airports_map(self, country):
         """
         Plot a map with the locations of airports in the specified country.
 
