@@ -105,9 +105,9 @@ class DataDownloader:
             source_info = self.airports_df[self.airports_df['IATA'] == source_airport]
             destination_info = self.airports_df[self.airports_df['IATA'] == destination_airport]
             if not source_info.empty and not destination_info.empty:
-                source_coords = (source_info.iloc[0]['Latitude'], source_info.iloc[0]['Longitude'])
-                destination_coords = (destination_info.iloc[0]['Latitude'], destination_info.iloc[0]['Longitude'])
-                distance = self.haversine_distance(*source_coords, *destination_coords)
+                source_coords = (float(source_info.iloc[0]['Latitude']), float(source_info.iloc[0]['Longitude']))
+                destination_coords = (float(destination_info.iloc[0]['Latitude']), float(destination_info.iloc[0]['Longitude']))
+                distance = haversine_distance(*source_coords, *destination_coords)
                 distances.append(distance)
         plt.hist(distances, bins=20, color='skyblue', edgecolor='black')
         plt.xlabel('Distance (km)')
