@@ -8,7 +8,8 @@ from urllib.request import urlretrieve
 from zipfile import ZipFile
 import math
 from .distance_function import haversine_distance
-
+import contextily as ctx
+    
 class DataDownloader:
     def __init__(self, data_url, file_name):
         self.data_url = data_url
@@ -173,7 +174,9 @@ class DataDownloader:
         :param n: Number of top airplane models to plot.
         """
         # Filter routes by countries if specified
-        if countries:
+        if isinstance(countries, str):
+            countries = [countries]
+        if isinstance(countries, list):
             filtered_routes = self.routes_df[
                 (self.routes_df['Source airport'].isin(self.airports_df[self.airports_df['Country'].isin(countries)]['IATA'])) &
                 (self.routes_df['Destination airport'].isin(self.airports_df[self.airports_df['Country'].isin(countries)]['IATA']))
@@ -200,6 +203,7 @@ class DataDownloader:
         :param country: Name of the country.
         :param internal: If True, plot only internal flights; otherwise, plot all flights.
         """
+        # Filter routes based on internal flag
         if internal:
             filtered_routes = self.routes_df[
                 (self.routes_df['Source airport'].isin(self.airports_df[self.airports_df['Country'] == country]['IATA'])) &
@@ -211,18 +215,34 @@ class DataDownloader:
                 (self.routes_df['Destination airport'].isin(self.airports_df[self.airports_df['Country'] == country]['IATA']))
             ]
 
-        # Get airport coordinates
-        airport_coords = self.airports_df[self.airports_df['Country'] == country][['Longitude', 'Latitude']].values
-
-        # Plot the flights on a map
+        # Plotting
         fig, ax = plt.subplots(figsize=(10, 8))
+        world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
+        world.plot(ax=ax, color='lightgrey')
+
+        # ... existing code ...
         for index, row in filtered_routes.iterrows():
-            source = self.airports_df[self.airports_df['IATA'] == row['Source airport']].iloc[0]
-            dest = self.airports_df[self.airports_df['IATA'] == row['Destination airport']].iloc[0]
-            ax.plot([source['Longitude'], dest['Longitude']], [source['Latitude'], dest['Latitude']], color='blue')
-        ax.scatter(airport_coords[:, 0], airport_coords[:, 1], color='red', label='Airports')
-        ax.set_xlabel('Longitude')
-        ax.set_ylabel('Latitude')
-        ax.set_title('Flights in {}'.format(country))
+            source_filtered = self.airports_df[self.airports_df['IATA'] == row['Source airport']]
+            dest_filtered = self.airports_df[self.airports_df['IATA'] == row['Destination airport']]
+            
+            if not source_filtered.empty and not dest_filtered.empty:
+                source = source_filtered.iloc[0]
+                dest = dest_filtered.iloc[0]
+                # Adjust the linewidth parameter here to make the lines thinner
+                ax.plot([source['Longitude'], dest['Longitude']], [source['Latitude'], dest['Latitude']], color='blue', linewidth=0.5)  # for example, using 0.5 makes the line thinner
+            else:
+                print(f"Route from {row['Source airport']} to {row['Destination airport']} skipped due to missing airport data.")
+        # ... remaining code ...
+
+
+        # Plot airports
+        airports_in_country = self.airports_df[self.airports_df['Country'] == country]
+        ax.scatter(airports_in_country['Longitude'], airports_in_country['Latitude'], color='red', s = 25, label='Airport')
+
+        ax.set_title(f'{"Internal" if internal else "All"} Flights in {country}')
         ax.legend()
+
+        # Optionally, add basemap with contextily
+        ctx.add_basemap(ax, source=ctx.providers.CartoDB.Positron, crs=world.crs.to_string())
+
         plt.show()
