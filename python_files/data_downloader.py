@@ -40,37 +40,37 @@ class DataDownloader(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
-    def __init__(self, **data):
+    def __init__(self, **data: Any) -> None:
         super().__init__(**data)
         self.setup_directories()
         self.initialize_downloader()
         self.load_datasets()
         self.validate_api_key()
 
-    def setup_directories(self):
+    def setup_directories(self) -> None:
         """Create necessary directories."""
         for directory in [self.downloads_dir, self.zip_dir]:
             if not os.path.exists(directory):
                 os.makedirs(directory)
 
-    def initialize_downloader(self):
+    def initialize_downloader(self) -> None:
         """Handle downloading, unzipping, and loading data."""
         if not os.path.isfile(os.path.join(self.downloads_dir, self.file_name)):
             self.download_data()
             self.unzip_data()
             self.validate_api_key()
 
-    def download_data(self):
+    def download_data(self) -> None:
         """Implement data downloading logic."""
         # Placeholder for download logic
         print(f"Downloading data from {self.data_url}...")
 
-    def unzip_data(self):
+    def unzip_data(self) -> None:
         """Implement data unzipping logic."""
         # Placeholder for unzip logic
         print("Unzipping data...")
 
-    def load_datasets(self):
+    def load_datasets(self) -> None:
         """Load datasets into pandas DataFrames."""
         self.airlines_df = pd.read_csv(os.path.join(self.zip_dir, "airlines.csv")).drop(
             columns=["index"], axis=1
@@ -85,25 +85,26 @@ class DataDownloader(BaseModel):
             columns=["index"], axis=1
         )
 
-    def validate_api_key(self):
+    def validate_api_key(self) -> None:
         """Validate the presence of an API key."""
         self.OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-        self.llm = OpenAI(temperature=0.1)
         if not self.OPENAI_API_KEY:
             raise ValueError("OpenAI API key is not set.")
+        else:
+            self.llm = OpenAI(temperature=0.1)
 
-    def download_data(self):
+    def download_data(self) -> None:
         file_path = os.path.join(self.downloads_dir, self.file_name)
         urlretrieve(self.data_url, file_path)
         print(f"Downloaded {self.file_name} to {self.downloads_dir}")
 
-    def unzip_data(self):
+    def unzip_data(self) -> None:
         zip_file_path = os.path.join(self.downloads_dir, self.file_name)
         with ZipFile(zip_file_path, "r") as zip_ref:
             zip_ref.extractall(self.zip_dir)
         print(f"Unzipped {self.file_name} to {self.zip_dir}")
 
-    def airport_distance(self, airport1="", airport2=""):
+    def airport_distance(self, airport1: str = "", airport2: str = "") -> None:
         """
         Extract the latitude and longitude for the two chosen airports to then call the haversine_distance method
         which then calculates the distance of the chosen airports.
@@ -117,14 +118,15 @@ class DataDownloader(BaseModel):
         -param lon2: Longitude of the second point.
         call haversine_distance(lat1, lon1, lat2, lon2) with output parameter
         """
-        lat1 = float(self.airports_df[self.airports_df["Name"] == airport1].iloc[:, 6])
-        lat2 = float(self.airports_df[self.airports_df["Name"] == airport2].iloc[:, 6])
-        lon1 = float(self.airports_df[self.airports_df["Name"] == airport1].iloc[:, 7])
-        lon2 = float(self.airports_df[self.airports_df["Name"] == airport2].iloc[:, 7])
-        distance = haversine_distance(lat1, lon1, lat2, lon2)
-        print(distance, "km")
+        lat1: float = float(self.airports_df[self.airports_df["Name"] == airport1].iloc[0, 6])
+        lat2: float = float(self.airports_df[self.airports_df["Name"] == airport2].iloc[0, 6])
+        lon1: float = float(self.airports_df[self.airports_df["Name"] == airport1].iloc[0, 7])
+        lon2: float = float(self.airports_df[self.airports_df["Name"] == airport2].iloc[0, 7])
+        distance: float = haversine_distance(lat1, lon1, lat2, lon2)
+        print(f"{distance} km")
 
-    def plot_airports_map(self, country):
+
+    def plot_airports_map(self, country: str = "") -> None:
         """
         Plot a map with the locations of airports in the specified country.
 
@@ -154,7 +156,7 @@ class DataDownloader(BaseModel):
         plt.ylabel("Latitude")
         plt.show()
 
-    def distance_analysis(self):
+    def distance_analysis(self) -> None:
         """
         Plot the distribution of flight distances for all flights.
         """
@@ -183,7 +185,7 @@ class DataDownloader(BaseModel):
         plt.title("Distribution of Flight Distances")
         plt.show()
 
-    def plot_flights(self, airport, internal=False, fig=None, ax=None):
+    def plot_flights(self, airport, internal=False, fig=None, ax=None) -> None:
         """
         Plot flights leaving the specified airport.
 
@@ -257,7 +259,7 @@ class DataDownloader(BaseModel):
         ax.legend()
         return fig, ax
 
-    def plot_top_airplane_models(self, countries=None, n=5):
+    def plot_top_airplane_models(self, countries=None, n=5) -> None:
         """
         Plot the N most used airplane models by number of routes.
         If countries are specified, plot only for those countries.
@@ -301,7 +303,7 @@ class DataDownloader(BaseModel):
         plt.tight_layout()
         plt.show()
 
-    def plot_country_flights(self, country, internal=False):
+    def plot_country_flights(self, country, internal=False) -> None:
         """
         Plot flights leaving or arriving in the specified country.
         :param country: Name of the country.
@@ -385,16 +387,16 @@ class DataDownloader(BaseModel):
 
         plt.show()
 
-    def airplanes(self):
+    def airplanes(self) -> pd.Series:
         """
-        Return a list of all aircraft models.
+        Returns a pandas Series of all airplanes.
 
         Returns:
-            list: A list of all airplane models.
+            pd.Series: A Series object containing the names of all airplanes.
         """
         return self.airplanes_df["Name"]
 
-    def aircraft_info(self, aircraft_name):
+    def aircraft_info(self, aircraft_name: str) -> str:
         """
         Retrieves information about a specified aircraft using a language model and prints it in Markdown format.
 
@@ -419,16 +421,16 @@ class DataDownloader(BaseModel):
             result = self.llm(prompt)
             return Markdown(result)
 
-    def airports(self):
+    def airports(self) -> pd.Series:
         """
-        Return a list of all aircraft models.
+        Returns a pandas Series of all airports.
 
         Returns:
-            list: A list of all airplane models.
+            pd.Series: A Series object containing the names of all airports.
         """
         return self.airports_df["Name"]
 
-    def airport_info(self, airport_name):
+    def airport_info(self, airport_name: str) -> str:
         """
         Retrieves information about a specified aircraft using a language model and prints it in Markdown format.
 
