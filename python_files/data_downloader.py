@@ -18,16 +18,18 @@ from langchain_openai import OpenAI
 from typing import Optional, Any
 
 
-
-
 warnings.filterwarnings("ignore")
 
 
 class DataDownloader(BaseModel):
     data_url: str
     file_name: str
-    downloads_dir: str = Field(default_factory=lambda: os.path.join(os.getcwd(), 'downloads'))
-    zip_dir: str = Field(default_factory=lambda: os.path.join(os.getcwd(), 'downloads', 'zip_files'))
+    downloads_dir: str = Field(
+        default_factory=lambda: os.path.join(os.getcwd(), "downloads")
+    )
+    zip_dir: str = Field(
+        default_factory=lambda: os.path.join(os.getcwd(), "downloads", "zip_files")
+    )
     airlines_df: pd.DataFrame = None
     airplanes_df: pd.DataFrame = None
     airports_df: pd.DataFrame = None
@@ -41,7 +43,7 @@ class DataDownloader(BaseModel):
     def __init__(self, **data):
         super().__init__(**data)
         self.setup_directories()
-        self.initialize_downloader() 
+        self.initialize_downloader()
         self.load_datasets()
         self.validate_api_key()
 
@@ -70,15 +72,22 @@ class DataDownloader(BaseModel):
 
     def load_datasets(self):
         """Load datasets into pandas DataFrames."""
-        self.airlines_df = pd.read_csv(os.path.join(self.zip_dir, 'airlines.csv')).drop(columns=["index"], axis=1)
-        self.airplanes_df = pd.read_csv(os.path.join(self.zip_dir, 'airplanes.csv')).drop(columns=["index"], axis=1)
-        self.airports_df = pd.read_csv(os.path.join(self.zip_dir, 'airports.csv')).drop(
-            columns=["index", "Type", "Source"], axis=1)
-        self.routes_df = pd.read_csv(os.path.join(self.zip_dir, 'routes.csv')).drop(columns=["index"], axis=1)
+        self.airlines_df = pd.read_csv(os.path.join(self.zip_dir, "airlines.csv")).drop(
+            columns=["index"], axis=1
+        )
+        self.airplanes_df = pd.read_csv(
+            os.path.join(self.zip_dir, "airplanes.csv")
+        ).drop(columns=["index"], axis=1)
+        self.airports_df = pd.read_csv(os.path.join(self.zip_dir, "airports.csv")).drop(
+            columns=["index", "Type", "Source"], axis=1
+        )
+        self.routes_df = pd.read_csv(os.path.join(self.zip_dir, "routes.csv")).drop(
+            columns=["index"], axis=1
+        )
 
     def validate_api_key(self):
         """Validate the presence of an API key."""
-        self.OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+        self.OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
         self.llm = OpenAI(temperature=0.1)
         if not self.OPENAI_API_KEY:
             raise ValueError("OpenAI API key is not set.")
@@ -90,11 +99,11 @@ class DataDownloader(BaseModel):
 
     def unzip_data(self):
         zip_file_path = os.path.join(self.downloads_dir, self.file_name)
-        with ZipFile(zip_file_path, 'r') as zip_ref:
+        with ZipFile(zip_file_path, "r") as zip_ref:
             zip_ref.extractall(self.zip_dir)
         print(f"Unzipped {self.file_name} to {self.zip_dir}")
 
-    def airport_distance(self ,airport1="", airport2=""):
+    def airport_distance(self, airport1="", airport2=""):
         """
         Extract the latitude and longitude for the two chosen airports to then call the haversine_distance method
         which then calculates the distance of the chosen airports.
@@ -129,38 +138,49 @@ class DataDownloader(BaseModel):
         if country_airports.empty:
             print("Error: Country does not exist or has no airports.")
             return
-        
-        world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
-        ax = world.plot(color='white', edgecolor='black', figsize=(10, 6))
 
-        country_map = gpd.GeoDataFrame(country_airports,
-                                       geometry=gpd.points_from_xy(country_airports.Longitude,
-                                                                    country_airports.Latitude))
-        country_map.plot(ax=ax, color='red', markersize=10)
-        plt.title(f'Airports in {country}')
-        plt.xlabel('Longitude')
-        plt.ylabel('Latitude')
+        world = gpd.read_file(gpd.datasets.get_path("naturalearth_lowres"))
+        ax = world.plot(color="white", edgecolor="black", figsize=(10, 6))
+
+        country_map = gpd.GeoDataFrame(
+            country_airports,
+            geometry=gpd.points_from_xy(
+                country_airports.Longitude, country_airports.Latitude
+            ),
+        )
+        country_map.plot(ax=ax, color="red", markersize=10)
+        plt.title(f"Airports in {country}")
+        plt.xlabel("Longitude")
+        plt.ylabel("Latitude")
         plt.show()
-    
+
     def distance_analysis(self):
         """
         Plot the distribution of flight distances for all flights.
         """
         distances = []
         for index, row in self.routes_df.iterrows():
-            source_airport = row['Source airport']
-            destination_airport = row['Destination airport']
-            source_info = self.airports_df[self.airports_df['IATA'] == source_airport]
-            destination_info = self.airports_df[self.airports_df['IATA'] == destination_airport]
+            source_airport = row["Source airport"]
+            destination_airport = row["Destination airport"]
+            source_info = self.airports_df[self.airports_df["IATA"] == source_airport]
+            destination_info = self.airports_df[
+                self.airports_df["IATA"] == destination_airport
+            ]
             if not source_info.empty and not destination_info.empty:
-                source_coords = (float(source_info.iloc[0]['Latitude']), float(source_info.iloc[0]['Longitude']))
-                destination_coords = (float(destination_info.iloc[0]['Latitude']), float(destination_info.iloc[0]['Longitude']))
+                source_coords = (
+                    float(source_info.iloc[0]["Latitude"]),
+                    float(source_info.iloc[0]["Longitude"]),
+                )
+                destination_coords = (
+                    float(destination_info.iloc[0]["Latitude"]),
+                    float(destination_info.iloc[0]["Longitude"]),
+                )
                 distance = haversine_distance(*source_coords, *destination_coords)
                 distances.append(distance)
-        plt.hist(distances, bins=20, color='skyblue', edgecolor='black')
-        plt.xlabel('Distance (km)')
-        plt.ylabel('Frequency')
-        plt.title('Distribution of Flight Distances')
+        plt.hist(distances, bins=20, color="skyblue", edgecolor="black")
+        plt.xlabel("Distance (km)")
+        plt.ylabel("Frequency")
+        plt.title("Distribution of Flight Distances")
         plt.show()
 
     def plot_flights(self, airport, internal=False, fig=None, ax=None):
@@ -180,38 +200,63 @@ class DataDownloader(BaseModel):
         if fig is None or ax is None:
             fig, ax = plt.subplots(figsize=(10, 8))
 
-        world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
+        world = gpd.read_file(gpd.datasets.get_path("naturalearth_lowres"))
 
-        airport_point = Point(self.airports_df[self.airports_df['IATA'] == airport]['Longitude'].iloc[0], 
-                              self.airports_df[self.airports_df['IATA'] == airport]['Latitude'].iloc[0])
+        airport_point = Point(
+            self.airports_df[self.airports_df["IATA"] == airport]["Longitude"].iloc[0],
+            self.airports_df[self.airports_df["IATA"] == airport]["Latitude"].iloc[0],
+        )
 
         if internal:
-            airport_country = self.airports_df[self.airports_df['IATA'] == airport]['Country'].iloc[0]
-            internal_routes = self.routes_df[(self.routes_df['Source airport'] == airport) & 
-                                             (self.routes_df['Destination airport'].isin(
-                                                 self.airports_df[self.airports_df['Country'] == airport_country]['IATA']
-                                             ))]
-            internal_routes = internal_routes.merge(self.airports_df[['IATA', 'Latitude', 'Longitude', 'Country']], 
-                                                    left_on='Destination airport', right_on='IATA', how='inner')
+            airport_country = self.airports_df[self.airports_df["IATA"] == airport][
+                "Country"
+            ].iloc[0]
+            internal_routes = self.routes_df[
+                (self.routes_df["Source airport"] == airport)
+                & (
+                    self.routes_df["Destination airport"].isin(
+                        self.airports_df[
+                            self.airports_df["Country"] == airport_country
+                        ]["IATA"]
+                    )
+                )
+            ]
+            internal_routes = internal_routes.merge(
+                self.airports_df[["IATA", "Latitude", "Longitude", "Country"]],
+                left_on="Destination airport",
+                right_on="IATA",
+                how="inner",
+            )
 
-            ax.set_title(f'Internal Flights from {airport}')
+            ax.set_title(f"Internal Flights from {airport}")
         else:
-            all_routes = self.routes_df[self.routes_df['Source airport'] == airport]
-            all_routes = all_routes.merge(self.airports_df[['IATA', 'Latitude', 'Longitude', 'Country']], 
-                                          left_on='Destination airport', right_on='IATA', how='inner')
+            all_routes = self.routes_df[self.routes_df["Source airport"] == airport]
+            all_routes = all_routes.merge(
+                self.airports_df[["IATA", "Latitude", "Longitude", "Country"]],
+                left_on="Destination airport",
+                right_on="IATA",
+                how="inner",
+            )
 
-            ax.set_title(f'All Flights from {airport}')
+            ax.set_title(f"All Flights from {airport}")
 
-        world.plot(ax=ax, color='lightgrey')
-        ax.plot(airport_point.x, airport_point.y, 'ro', markersize=5, label='Airport')
+        world.plot(ax=ax, color="lightgrey")
+        ax.plot(airport_point.x, airport_point.y, "ro", markersize=5, label="Airport")
 
-        for _, route in internal_routes.iterrows() if internal else all_routes.iterrows():
-            route_line = LineString([(airport_point.x, airport_point.y), (route['Longitude'], route['Latitude'])])
-            ax.plot(*route_line.xy, 'b-')
+        for _, route in (
+            internal_routes.iterrows() if internal else all_routes.iterrows()
+        ):
+            route_line = LineString(
+                [
+                    (airport_point.x, airport_point.y),
+                    (route["Longitude"], route["Latitude"]),
+                ]
+            )
+            ax.plot(*route_line.xy, "b-")
 
         ax.legend()
         return fig, ax
-    
+
     def plot_top_airplane_models(self, countries=None, n=5):
         """
         Plot the N most used airplane models by number of routes.
@@ -225,21 +270,33 @@ class DataDownloader(BaseModel):
             countries = [countries]
         if isinstance(countries, list):
             filtered_routes = self.routes_df[
-                (self.routes_df['Source airport'].isin(self.airports_df[self.airports_df['Country'].isin(countries)]['IATA'])) &
-                (self.routes_df['Destination airport'].isin(self.airports_df[self.airports_df['Country'].isin(countries)]['IATA']))
+                (
+                    self.routes_df["Source airport"].isin(
+                        self.airports_df[self.airports_df["Country"].isin(countries)][
+                            "IATA"
+                        ]
+                    )
+                )
+                & (
+                    self.routes_df["Destination airport"].isin(
+                        self.airports_df[self.airports_df["Country"].isin(countries)][
+                            "IATA"
+                        ]
+                    )
+                )
             ]
         else:
             filtered_routes = self.routes_df
 
         # Get the count of routes for each airplane model
-        airplane_model_counts = filtered_routes['Equipment'].value_counts().head(n)
+        airplane_model_counts = filtered_routes["Equipment"].value_counts().head(n)
 
         # Plot the top N airplane models
         fig, ax = plt.subplots()
-        airplane_model_counts.plot(kind='bar', ax=ax)
-        ax.set_xlabel('Airplane Model')
-        ax.set_ylabel('Number of Routes')
-        ax.set_title('Top {} Airplane Models by Number of Routes'.format(n))
+        airplane_model_counts.plot(kind="bar", ax=ax)
+        ax.set_xlabel("Airplane Model")
+        ax.set_ylabel("Number of Routes")
+        ax.set_title("Top {} Airplane Models by Number of Routes".format(n))
         plt.xticks(rotation=45)
         plt.tight_layout()
         plt.show()
@@ -253,44 +310,78 @@ class DataDownloader(BaseModel):
         # Filter routes based on internal flag
         if internal:
             filtered_routes = self.routes_df[
-                (self.routes_df['Source airport'].isin(self.airports_df[self.airports_df['Country'] == country]['IATA'])) &
-                (self.routes_df['Destination airport'].isin(self.airports_df[self.airports_df['Country'] == country]['IATA']))
+                (
+                    self.routes_df["Source airport"].isin(
+                        self.airports_df[self.airports_df["Country"] == country]["IATA"]
+                    )
+                )
+                & (
+                    self.routes_df["Destination airport"].isin(
+                        self.airports_df[self.airports_df["Country"] == country]["IATA"]
+                    )
+                )
             ]
         else:
             filtered_routes = self.routes_df[
-                (self.routes_df['Source airport'].isin(self.airports_df[self.airports_df['Country'] == country]['IATA'])) |
-                (self.routes_df['Destination airport'].isin(self.airports_df[self.airports_df['Country'] == country]['IATA']))
+                (
+                    self.routes_df["Source airport"].isin(
+                        self.airports_df[self.airports_df["Country"] == country]["IATA"]
+                    )
+                )
+                | (
+                    self.routes_df["Destination airport"].isin(
+                        self.airports_df[self.airports_df["Country"] == country]["IATA"]
+                    )
+                )
             ]
 
         # Plotting
         fig, ax = plt.subplots(figsize=(10, 8))
-        world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
-        world.plot(ax=ax, color='lightgrey')
+        world = gpd.read_file(gpd.datasets.get_path("naturalearth_lowres"))
+        world.plot(ax=ax, color="lightgrey")
 
         # ... existing code ...
         for index, row in filtered_routes.iterrows():
-            source_filtered = self.airports_df[self.airports_df['IATA'] == row['Source airport']]
-            dest_filtered = self.airports_df[self.airports_df['IATA'] == row['Destination airport']]
-            
+            source_filtered = self.airports_df[
+                self.airports_df["IATA"] == row["Source airport"]
+            ]
+            dest_filtered = self.airports_df[
+                self.airports_df["IATA"] == row["Destination airport"]
+            ]
+
             if not source_filtered.empty and not dest_filtered.empty:
                 source = source_filtered.iloc[0]
                 dest = dest_filtered.iloc[0]
                 # Adjust the linewidth parameter here to make the lines thinner
-                ax.plot([source['Longitude'], dest['Longitude']], [source['Latitude'], dest['Latitude']], color='blue', linewidth=0.5)  # for example, using 0.5 makes the line thinner
+                ax.plot(
+                    [source["Longitude"], dest["Longitude"]],
+                    [source["Latitude"], dest["Latitude"]],
+                    color="blue",
+                    linewidth=0.5,
+                )  # for example, using 0.5 makes the line thinner
             else:
-                print(f"Route from {row['Source airport']} to {row['Destination airport']} skipped due to missing airport data.")
+                print(
+                    f"Route from {row['Source airport']} to {row['Destination airport']} skipped due to missing airport data."
+                )
         # ... remaining code ...
 
-
         # Plot airports
-        airports_in_country = self.airports_df[self.airports_df['Country'] == country]
-        ax.scatter(airports_in_country['Longitude'], airports_in_country['Latitude'], color='red', s = 25, label='Airport')
+        airports_in_country = self.airports_df[self.airports_df["Country"] == country]
+        ax.scatter(
+            airports_in_country["Longitude"],
+            airports_in_country["Latitude"],
+            color="red",
+            s=25,
+            label="Airport",
+        )
 
         ax.set_title(f'{"Internal" if internal else "All"} Flights in {country}')
         ax.legend()
 
         # Optionally, add basemap with contextily
-        ctx.add_basemap(ax, source=ctx.providers.CartoDB.Positron, crs=world.crs.to_string())
+        ctx.add_basemap(
+            ax, source=ctx.providers.CartoDB.Positron, crs=world.crs.to_string()
+        )
 
         plt.show()
 
@@ -320,12 +411,13 @@ class DataDownloader(BaseModel):
         all_aircraft_names_normalized = self.airplanes().str.strip().str.lower()
 
         if aircraft_name_normalized not in all_aircraft_names_normalized.values:
-          raise ValueError(f"{aircraft_name} is not a valid aircraft name. Please choose from the following: {', '.join(self.airplanes())}")
+            raise ValueError(
+                f"{aircraft_name} is not a valid aircraft name. Please choose from the following: {', '.join(self.airplanes())}"
+            )
         else:
             prompt = f"Generate a table in Markdown format with specifications and information for the aircraft named {aircraft_name}."
             result = self.llm(prompt)
             return Markdown(result)
-        
 
     def airports(self):
         """
@@ -335,7 +427,7 @@ class DataDownloader(BaseModel):
             list: A list of all airplane models.
         """
         return self.airports_df["Name"]
-        
+
     def airport_info(self, airport_name):
         """
         Retrieves information about a specified aircraft using a language model and prints it in Markdown format.
@@ -353,11 +445,10 @@ class DataDownloader(BaseModel):
         all_aircraft_names_normalized = self.airports().str.strip().str.lower()
 
         if aircraft_name_normalized not in all_aircraft_names_normalized.values:
-            raise ValueError(f"{airport_name} is not a valid aircraft name. Please choose from the following: {', '.join(self.airports())}")
+            raise ValueError(
+                f"{airport_name} is not a valid aircraft name. Please choose from the following: {', '.join(self.airports())}"
+            )
         else:
             prompt = f"Generate a table in Markdown format with specifications and information for the airport named {airport_name}."
             result = self.llm(prompt)
             return Markdown(result)
-        
-        
-            
