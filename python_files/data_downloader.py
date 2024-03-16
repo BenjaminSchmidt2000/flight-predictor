@@ -1,3 +1,5 @@
+import warnings
+
 import os
 import pandas as pd
 import geopandas as gpd
@@ -9,8 +11,20 @@ from zipfile import ZipFile
 import math
 from .distance_function import haversine_distance
 import contextily as ctx
-    
+from IPython.display import Markdown
+import openai
+from langchain_openai import OpenAI
+
+warnings.filterwarnings("ignore")
+
 class DataDownloader:
+    """
+    Documentation!!!
+
+    """
+
+    os.environ['OPENAI_API_KEY'] = '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'
+
     def __init__(self, data_url, file_name):
         self.data_url = data_url
         self.file_name = file_name
@@ -35,6 +49,13 @@ class DataDownloader:
         self.airports_df = pd.read_csv(os.path.join(self.zip_dir, 'airports.csv')).drop(
             columns=["index", "Type", "Source"], axis=1)
         self.routes_df = pd.read_csv(os.path.join(self.zip_dir, 'routes.csv')).drop(columns=["index"], axis=1)
+
+        self.OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
+
+        if not self.OPENAI_API_KEY:
+            raise ValueError("OpenAI API key is not set.")
+        # Create an instance of the OpenAI LLM client with the class's API key
+        self.llm = OpenAI(temperature=0.1)
 
     def download_data(self):
         file_path = os.path.join(self.downloads_dir, self.file_name)
@@ -246,3 +267,71 @@ class DataDownloader:
         ctx.add_basemap(ax, source=ctx.providers.CartoDB.Positron, crs=world.crs.to_string())
 
         plt.show()
+
+    def airplanes(self):
+        """
+        Return a list of all aircraft models.
+
+        Returns:
+            list: A list of all airplane models.
+        """
+        return self.airplanes_df["Name"]
+
+    def aircraft_info(self, aircraft_name):
+        """
+        Retrieves information about a specified aircraft using a language model and prints it in Markdown format.
+
+        Parameters:
+        aircraft_name (str): The name of the aircraft to retrieve information for.
+
+        Raises:
+        ValueError: If the specified aircraft name is not in the list of known aircrafts.
+
+        Returns:
+        str: A string containing a Markdown-formatted table of the aircraft specifications.
+        """
+        aircraft_name_normalized = aircraft_name.strip().lower()
+        all_aircraft_names_normalized = self.airplanes().str.strip().str.lower()
+
+        if aircraft_name_normalized not in all_aircraft_names_normalized.values:
+          raise ValueError(f"{aircraft_name} is not a valid aircraft name. Please choose from the following: {', '.join(self.airplanes())}")
+        else:
+            prompt = f"Generate a table in Markdown format with specifications and information for the aircraft named {aircraft_name}."
+            result = self.llm(prompt)
+            return Markdown(result)
+        
+
+    def airports(self):
+        """
+        Return a list of all aircraft models.
+
+        Returns:
+            list: A list of all airplane models.
+        """
+        return self.airports_df["Name"]
+        
+    def airport_info(self, airport_name):
+        """
+        Retrieves information about a specified aircraft using a language model and prints it in Markdown format.
+
+        Parameters:
+        aircraft_name (str): The name of the aircraft to retrieve information for.
+
+        Raises:
+        ValueError: If the specified aircraft name is not in the list of known aircrafts.
+
+        Returns:
+        str: A string containing a Markdown-formatted table of the aircraft specifications.
+        """
+        aircraft_name_normalized = airport_name.strip().lower()
+        all_aircraft_names_normalized = self.airports().str.strip().str.lower()
+
+        if aircraft_name_normalized not in all_aircraft_names_normalized.values:
+            raise ValueError(f"{airport_name} is not a valid aircraft name. Please choose from the following: {', '.join(self.airports())}")
+        else:
+            prompt = f"Generate a table in Markdown format with specifications and information for the airport named {airport_name}."
+            result = self.llm(prompt)
+            return Markdown(result)
+        
+        
+            
