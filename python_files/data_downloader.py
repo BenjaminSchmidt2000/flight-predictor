@@ -8,59 +8,80 @@ import matplotlib.pyplot as plt
 from shapely.geometry import Point, LineString
 from urllib.request import urlretrieve
 from zipfile import ZipFile
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 import math
 from .distance_function import haversine_distance
 import contextily as ctx
 from IPython.display import Markdown
 import openai
 from langchain_openai import OpenAI
+from typing import Optional, Any
+
 
 
 
 warnings.filterwarnings("ignore")
 
+
 class DataDownloader(BaseModel):
     data_url: str
     file_name: str
-    """
-    Documentation!!!
+    downloads_dir: str = Field(default_factory=lambda: os.path.join(os.getcwd(), 'downloads'))
+    zip_dir: str = Field(default_factory=lambda: os.path.join(os.getcwd(), 'downloads', 'zip_files'))
+    airlines_df: pd.DataFrame = None
+    airplanes_df: pd.DataFrame = None
+    airports_df: pd.DataFrame = None
+    routes_df: pd.DataFrame = None
+    OPENAI_API_KEY: Optional[str] = None
+    llm: Any = None
 
-    """
+    class Config:
+        arbitrary_types_allowed = True
 
-    
-    
-    def __init__(self, data_url, file_name):
-        self.data_url = data_url
-        self.file_name = file_name
-        self.downloads_dir = os.path.join(os.getcwd(), 'downloads')
-        self.zip_dir = os.path.join(self.downloads_dir, 'zip_files')
+    def __init__(self, **data):
+        super().__init__(**data)
+        self.setup_directories()
+        self.initialize_downloader() 
+        self.load_datasets()
+        self.validate_api_key()
 
-        # Check if directories exist, create if not
+    def setup_directories(self):
+        """Create necessary directories."""
         for directory in [self.downloads_dir, self.zip_dir]:
             if not os.path.exists(directory):
                 os.makedirs(directory)
 
-        # Check if file already exists
+    def initialize_downloader(self):
+        """Handle downloading, unzipping, and loading data."""
         if not os.path.isfile(os.path.join(self.downloads_dir, self.file_name)):
             self.download_data()
+            self.unzip_data()
+            self.validate_api_key()
 
-        # Unzip the downloaded file
-        self.unzip_data()
+    def download_data(self):
+        """Implement data downloading logic."""
+        # Placeholder for download logic
+        print(f"Downloading data from {self.data_url}...")
 
-        # Read datasets into corresponding pandas dataframes
+    def unzip_data(self):
+        """Implement data unzipping logic."""
+        # Placeholder for unzip logic
+        print("Unzipping data...")
+
+    def load_datasets(self):
+        """Load datasets into pandas DataFrames."""
         self.airlines_df = pd.read_csv(os.path.join(self.zip_dir, 'airlines.csv')).drop(columns=["index"], axis=1)
         self.airplanes_df = pd.read_csv(os.path.join(self.zip_dir, 'airplanes.csv')).drop(columns=["index"], axis=1)
         self.airports_df = pd.read_csv(os.path.join(self.zip_dir, 'airports.csv')).drop(
             columns=["index", "Type", "Source"], axis=1)
         self.routes_df = pd.read_csv(os.path.join(self.zip_dir, 'routes.csv')).drop(columns=["index"], axis=1)
 
+    def validate_api_key(self):
+        """Validate the presence of an API key."""
         self.OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
-
+        self.llm = OpenAI(temperature=0.1)
         if not self.OPENAI_API_KEY:
             raise ValueError("OpenAI API key is not set.")
-        
-        self.llm = OpenAI(temperature=0.1)
 
     def download_data(self):
         file_path = os.path.join(self.downloads_dir, self.file_name)
