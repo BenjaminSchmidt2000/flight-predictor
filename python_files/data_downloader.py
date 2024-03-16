@@ -15,6 +15,8 @@ from IPython.display import Markdown
 import openai
 from langchain_openai import OpenAI
 
+
+
 warnings.filterwarnings("ignore")
 
 class DataDownloader:
@@ -22,8 +24,6 @@ class DataDownloader:
     Documentation!!!
 
     """
-
-    os.environ['OPENAI_API_KEY'] = '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'
 
     def __init__(self, data_url, file_name):
         self.data_url = data_url
@@ -50,11 +50,11 @@ class DataDownloader:
             columns=["index", "Type", "Source"], axis=1)
         self.routes_df = pd.read_csv(os.path.join(self.zip_dir, 'routes.csv')).drop(columns=["index"], axis=1)
 
-        self.OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
+        self.OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
         if not self.OPENAI_API_KEY:
             raise ValueError("OpenAI API key is not set.")
-        # Create an instance of the OpenAI LLM client with the class's API key
+        
         self.llm = OpenAI(temperature=0.1)
 
     def download_data(self):
