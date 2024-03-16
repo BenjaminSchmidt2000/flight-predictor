@@ -16,12 +16,16 @@ import sys
 sys.path.append("./python_files/")
 from distance_function import haversine_distance
 
-def test_haversine_distance_one():
+def test_one():
     with pytest.raises(TypeError):
         haversine_distance("Test")
 
 
-#def test_haversine_distance_two():
+def test_two():
+    # Distance between Ronald Reagan Washington National Airport and Albury Airport
+    assert haversine_distance(38.8521,-77.037697,-36.06779861450195,146.95799255371094) == pytest.approx(16157.03, abs=0.5)
+    # Distance between Albury Airport and Belfast International Airport
+    assert haversine_distance(-36.06779861450195,146.95799255371094,54.6575012207,-6.21582984924) == pytest.approx(17105.35, abs=0.5)
+    # Distance between Belfast International Airport and Ronald Reagan Washington National Airport
+    assert haversine_distance(54.6575012207,-6.21582984924,38.8521,-77.037697) == pytest.approx(5417.82, abs=0.5)
 
-
-#def test_haversine_distance_three():
