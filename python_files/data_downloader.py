@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from shapely.geometry import Point, LineString
 from urllib.request import urlretrieve
 from zipfile import ZipFile
+from pydantic import BaseModel
 import math
 from .distance_function import haversine_distance
 import contextily as ctx
@@ -19,12 +20,16 @@ from langchain_openai import OpenAI
 
 warnings.filterwarnings("ignore")
 
-class DataDownloader:
+class DataDownloader(BaseModel):
+    data_url: str
+    file_name: str
     """
     Documentation!!!
 
     """
 
+    
+    
     def __init__(self, data_url, file_name):
         self.data_url = data_url
         self.file_name = file_name
