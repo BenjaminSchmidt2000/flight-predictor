@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>data_downloader module &mdash; group 19 0.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/documentation_options.js?v=2709fde1"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="distance_function module" href="distance_function.html" />
+    <link rel="prev" title="python_files" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> group 19
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">python_files</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">data_downloader module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#data_downloader.DataDownloader"><code class="docutils literal notranslate"><span class="pre">DataDownloader</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#data_downloader.DataDownloader.data_url"><code class="docutils literal notranslate"><span class="pre">DataDownloader.data_url</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_downloader.DataDownloader.file_name"><code class="docutils literal notranslate"><span class="pre">DataDownloader.file_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_downloader.DataDownloader.downloads_dir"><code class="docutils literal notranslate"><span class="pre">DataDownloader.downloads_dir</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_downloader.DataDownloader.zip_dir"><code class="docutils literal notranslate"><span class="pre">DataDownloader.zip_dir</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_downloader.DataDownloader.airlines_df"><code class="docutils literal notranslate"><span class="pre">DataDownloader.airlines_df</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_downloader.DataDownloader.airplanes_df"><code class="docutils literal notranslate"><span class="pre">DataDownloader.airplanes_df</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_downloader.DataDownloader.airports_df"><code class="docutils literal notranslate"><span class="pre">DataDownloader.airports_df</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_downloader.DataDownloader.routes_df"><code class="docutils literal notranslate"><span class="pre">DataDownloader.routes_df</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_downloader.DataDownloader.OPENAI_API_KEY"><code class="docutils literal notranslate"><span class="pre">DataDownloader.OPENAI_API_KEY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_downloader.DataDownloader.llm"><code class="docutils literal notranslate"><span class="pre">DataDownloader.llm</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_downloader.DataDownloader.__init__"><code class="docutils literal notranslate"><span class="pre">DataDownloader.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_downloader.DataDownloader.setup_directories"><code class="docutils literal notranslate"><span class="pre">DataDownloader.setup_directories()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_downloader.DataDownloader.initialize_downloader"><code class="docutils literal notranslate"><span class="pre">DataDownloader.initialize_downloader()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_downloader.DataDownloader.download_data"><code class="docutils literal notranslate"><span class="pre">DataDownloader.download_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_downloader.DataDownloader.unzip_data"><code class="docutils literal notranslate"><span class="pre">DataDownloader.unzip_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_downloader.DataDownloader.load_datasets"><code class="docutils literal notranslate"><span class="pre">DataDownloader.load_datasets()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_downloader.DataDownloader.validate_api_key"><code class="docutils literal notranslate"><span class="pre">DataDownloader.validate_api_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_downloader.DataDownloader.airport_distance"><code class="docutils literal notranslate"><span class="pre">DataDownloader.airport_distance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_downloader.DataDownloader.plot_airports_map"><code class="docutils literal notranslate"><span class="pre">DataDownloader.plot_airports_map()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_downloader.DataDownloader.distance_analysis"><code class="docutils literal notranslate"><span class="pre">DataDownloader.distance_analysis()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_downloader.DataDownloader.plot_flights"><code class="docutils literal notranslate"><span class="pre">DataDownloader.plot_flights()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_downloader.DataDownloader.plot_top_airplane_models"><code class="docutils literal notranslate"><span class="pre">DataDownloader.plot_top_airplane_models()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_downloader.DataDownloader.airplanes"><code class="docutils literal notranslate"><span class="pre">DataDownloader.airplanes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_downloader.DataDownloader.aircraft_info"><code class="docutils literal notranslate"><span class="pre">DataDownloader.aircraft_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_downloader.DataDownloader.airports"><code class="docutils literal notranslate"><span class="pre">DataDownloader.airports()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_downloader.DataDownloader.airport_info"><code class="docutils literal notranslate"><span class="pre">DataDownloader.airport_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_downloader.DataDownloader.Config"><code class="docutils literal notranslate"><span class="pre">DataDownloader.Config</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">DataDownloader.OPENAI_API_KEY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">DataDownloader.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_downloader.DataDownloader._abc_impl"><code class="docutils literal notranslate"><span class="pre">DataDownloader._abc_impl</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">DataDownloader.aircraft_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">DataDownloader.airlines_df</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4"><code class="docutils literal notranslate"><span class="pre">DataDownloader.airplanes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">DataDownloader.airplanes_df</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id6"><code class="docutils literal notranslate"><span class="pre">DataDownloader.airport_distance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id7"><code class="docutils literal notranslate"><span class="pre">DataDownloader.airport_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id8"><code class="docutils literal notranslate"><span class="pre">DataDownloader.airports()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id9"><code class="docutils literal notranslate"><span class="pre">DataDownloader.airports_df</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id10"><code class="docutils literal notranslate"><span class="pre">DataDownloader.data_url</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id11"><code class="docutils literal notranslate"><span class="pre">DataDownloader.distance_analysis()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id12"><code class="docutils literal notranslate"><span class="pre">DataDownloader.download_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id13"><code class="docutils literal notranslate"><span class="pre">DataDownloader.downloads_dir</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id14"><code class="docutils literal notranslate"><span class="pre">DataDownloader.file_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id15"><code class="docutils literal notranslate"><span class="pre">DataDownloader.initialize_downloader()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id16"><code class="docutils literal notranslate"><span class="pre">DataDownloader.llm</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id17"><code class="docutils literal notranslate"><span class="pre">DataDownloader.load_datasets()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_downloader.DataDownloader.model_computed_fields"><code class="docutils literal notranslate"><span class="pre">DataDownloader.model_computed_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_downloader.DataDownloader.model_config"><code class="docutils literal notranslate"><span class="pre">DataDownloader.model_config</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_downloader.DataDownloader.model_fields"><code class="docutils literal notranslate"><span class="pre">DataDownloader.model_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id18"><code class="docutils literal notranslate"><span class="pre">DataDownloader.plot_airports_map()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_downloader.DataDownloader.plot_country_flights"><code class="docutils literal notranslate"><span class="pre">DataDownloader.plot_country_flights()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id19"><code class="docutils literal notranslate"><span class="pre">DataDownloader.plot_flights()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id20"><code class="docutils literal notranslate"><span class="pre">DataDownloader.plot_top_airplane_models()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id21"><code class="docutils literal notranslate"><span class="pre">DataDownloader.routes_df</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id22"><code class="docutils literal notranslate"><span class="pre">DataDownloader.setup_directories()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id23"><code class="docutils literal notranslate"><span class="pre">DataDownloader.unzip_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id24"><code class="docutils literal notranslate"><span class="pre">DataDownloader.validate_api_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id25"><code class="docutils literal notranslate"><span class="pre">DataDownloader.zip_dir</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="distance_function.html">distance_function module</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">group 19</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">python_files</a></li>
+      <li class="breadcrumb-item active">data_downloader module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/data_downloader.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-data_downloader">
+<span id="data-downloader-module"></span><h1>data_downloader module<a class="headerlink" href="#module-data_downloader" title="Link to this heading"></a></h1>
+<p>This module provides a comprehensive toolkit for the analysis
+and visualization of aviation data, including airports, aircraft,
+and flight routes. It is designed to facilitate the downloading
+and processing of relevant datasets, perform spatial and
+quantitative analyses, and generate insightful visualizations
+to understand patterns in flight routes, aircraft usage, and more.</p>
+<p>Key Features:
+- DataDownloader: A class for automating the downloading,</p>
+<blockquote>
+<div><p>extraction, and loading of aviation-related datasets.</p>
+</div></blockquote>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Analysis and Visualization: Functions for calculating</dt><dd><p>distances between airports, plotting flight routes on
+geographical maps, analyzing the distribution of flight
+distances, and visualizing the most used airplane models.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Environmental Impact Analysis: Tools to estimate emission</dt><dd><p>reductions from substituting short-haul flights with rail
+services, including both percentage and absolute
+difference calculations.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Language Model Integration: Utilizes OpenAI’s language</dt><dd><p>models to generate Markdown-formatted tables containing
+specifications and information for specified aircraft
+and airports, enhancing the accessibility and
+comprehensibility of complex data.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Utility Functions: A set of functions to retrieve and</dt><dd><p>process data about airplanes and airports from the
+loaded datasets.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>Intended Use:
+This module is intended for researchers, analysts, and
+enthusiasts in the field of aviation and environmental
+studies. It provides a robust framework for exploring
+aviation data, with a particular focus on environmental
+impact assessments and the promotion of alternative,
+greener modes of transportation.</p>
+<p>Dependencies:
+- pandas and geopandas for data handling and spatial analysis.
+- matplotlib and shapely for visualization and geometric operations.
+- pydantic for data validation.
+- openai and langchain_openai for integrating language model capabilities.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="data_downloader.DataDownloader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">data_downloader.</span></span><span class="sig-name descname"><span class="pre">DataDownloader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">downloads_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zip_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">airlines_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">airplanes_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">airports_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">routes_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">OPENAI_API_KEY</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">llm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_downloader.DataDownloader" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>A class for downloading, extracting, loading, and analyzing aviation data,
+covering airlines, airplanes, airports, and flight routes. It integrates
+data management and spatial analysis functionalities for environmental
+impact assessment and data visualization.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="data_downloader.DataDownloader.data_url">
+<span class="sig-name descname"><span class="pre">data_url</span></span><a class="headerlink" href="#data_downloader.DataDownloader.data_url" title="Link to this definition"></a></dt>
+<dd><p>URL to download the dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="data_downloader.DataDownloader.file_name">
+<span class="sig-name descname"><span class="pre">file_name</span></span><a class="headerlink" href="#data_downloader.DataDownloader.file_name" title="Link to this definition"></a></dt>
+<dd><p>Name of the file to download.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="data_downloader.DataDownloader.downloads_dir">
+<span class="sig-name descname"><span class="pre">downloads_dir</span></span><a class="headerlink" href="#data_downloader.DataDownloader.downloads_dir" title="Link to this definition"></a></dt>
+<dd><p>Path to store downloaded files. Defaults to ‘downloads’ in the current
+working directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="data_downloader.DataDownloader.zip_dir">
+<span class="sig-name descname"><span class="pre">zip_dir</span></span><a class="headerlink" href="#data_downloader.DataDownloader.zip_dir" title="Link to this definition"></a></dt>
+<dd><p>Path for extracted zip contents. Defaults to ‘zip_files’ subdirectory
+within ‘downloads_dir’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="data_downloader.DataDownloader.airlines_df">
+<span class="sig-name descname"><span class="pre">airlines_df</span></span><a class="headerlink" href="#data_downloader.DataDownloader.airlines_df" title="Link to this definition"></a></dt>
+<dd><p>DataFrame with airlines data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="data_downloader.DataDownloader.airplanes_df">
+<span class="sig-name descname"><span class="pre">airplanes_df</span></span><a class="headerlink" href="#data_downloader.DataDownloader.airplanes_df" title="Link to this definition"></a></dt>
+<dd><p>DataFrame with airplanes data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="data_downloader.DataDownloader.airports_df">
+<span class="sig-name descname"><span class="pre">airports_df</span></span><a class="headerlink" href="#data_downloader.DataDownloader.airports_df" title="Link to this definition"></a></dt>
+<dd><p>DataFrame with airports data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="data_downloader.DataDownloader.routes_df">
+<span class="sig-name descname"><span class="pre">routes_df</span></span><a class="headerlink" href="#data_downloader.DataDownloader.routes_df" title="Link to this definition"></a></dt>
+<dd><p>DataFrame with routes data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="data_downloader.DataDownloader.OPENAI_API_KEY">
+<span class="sig-name descname"><span class="pre">OPENAI_API_KEY</span></span><a class="headerlink" href="#data_downloader.DataDownloader.OPENAI_API_KEY" title="Link to this definition"></a></dt>
+<dd><p>OpenAI API key for language model integration. Default is None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="data_downloader.DataDownloader.llm">
+<span class="sig-name descname"><span class="pre">llm</span></span><a class="headerlink" href="#data_downloader.DataDownloader.llm" title="Link to this definition"></a></dt>
+<dd><p>Language model client, initialized with OpenAI API key.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="data_downloader.DataDownloader.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_downloader.DataDownloader.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the instance, sets up directories and data loaders.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="data_downloader.DataDownloader.setup_directories">
+<span class="sig-name descname"><span class="pre">setup_directories</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#data_downloader.DataDownloader.setup_directories" title="Link to this definition"></a></dt>
+<dd><p>Creates directories for downloads and extracted files.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="data_downloader.DataDownloader.initialize_downloader">
+<span class="sig-name descname"><span class="pre">initialize_downloader</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#data_downloader.DataDownloader.initialize_downloader" title="Link to this definition"></a></dt>
+<dd><p>Manages downloading, unzipping data files, and initializes the language
+model client.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="data_downloader.DataDownloader.download_data">
+<span class="sig-name descname"><span class="pre">download_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#data_downloader.DataDownloader.download_data" title="Link to this definition"></a></dt>
+<dd><p>Downloads the data file from the specified URL.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="data_downloader.DataDownloader.unzip_data">
+<span class="sig-name descname"><span class="pre">unzip_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#data_downloader.DataDownloader.unzip_data" title="Link to this definition"></a></dt>
+<dd><p>Extracts the downloaded zip file’s contents.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="data_downloader.DataDownloader.load_datasets">
+<span class="sig-name descname"><span class="pre">load_datasets</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#data_downloader.DataDownloader.load_datasets" title="Link to this definition"></a></dt>
+<dd><p>Loads CSV data into pandas DataFrames.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="data_downloader.DataDownloader.validate_api_key">
+<span class="sig-name descname"><span class="pre">validate_api_key</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#data_downloader.DataDownloader.validate_api_key" title="Link to this definition"></a></dt>
+<dd><p>Checks for OpenAI API key and initializes the language model client.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="data_downloader.DataDownloader.airport_distance">
+<span class="sig-name descname"><span class="pre">airport_distance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">airport1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">airport2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_downloader.DataDownloader.airport_distance" title="Link to this definition"></a></dt>
+<dd><p>Calculates distance between two airports.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="data_downloader.DataDownloader.plot_airports_map">
+<span class="sig-name descname"><span class="pre">plot_airports_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">country</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_downloader.DataDownloader.plot_airports_map" title="Link to this definition"></a></dt>
+<dd><p>Generates a map of airports in a specified country.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="data_downloader.DataDownloader.distance_analysis">
+<span class="sig-name descname"><span class="pre">distance_analysis</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#data_downloader.DataDownloader.distance_analysis" title="Link to this definition"></a></dt>
+<dd><p>Analyzes distribution of flight distances.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="data_downloader.DataDownloader.plot_flights">
+<span class="sig-name descname"><span class="pre">plot_flights</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">airport</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">internal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_downloader.DataDownloader.plot_flights" title="Link to this definition"></a></dt>
+<dd><p>Plots flight routes from a specified airport.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="data_downloader.DataDownloader.plot_top_airplane_models">
+<span class="sig-name descname"><span class="pre">plot_top_airplane_models</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">countries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_downloader.DataDownloader.plot_top_airplane_models" title="Link to this definition"></a></dt>
+<dd><p>Visualizes top N airplane models by route number.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">plot_country_flights(country:</span> <span class="pre">str,</span> <span class="pre">cutoff_distance:</span> <span class="pre">float,</span></span></dt>
+<dd><blockquote>
+<div><p>internal: bool = False)</p>
+</div></blockquote>
+<p>Plots flight routes within a specific country.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="data_downloader.DataDownloader.airplanes">
+<span class="sig-name descname"><span class="pre">airplanes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#data_downloader.DataDownloader.airplanes" title="Link to this definition"></a></dt>
+<dd><p>Returns a Series of airplane names.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="data_downloader.DataDownloader.aircraft_info">
+<span class="sig-name descname"><span class="pre">aircraft_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">aircraft_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_downloader.DataDownloader.aircraft_info" title="Link to this definition"></a></dt>
+<dd><p>Generates Markdown table with aircraft specifications.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="data_downloader.DataDownloader.airports">
+<span class="sig-name descname"><span class="pre">airports</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#data_downloader.DataDownloader.airports" title="Link to this definition"></a></dt>
+<dd><p>Returns a Series of airport names.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="data_downloader.DataDownloader.airport_info">
+<span class="sig-name descname"><span class="pre">airport_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">airport_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_downloader.DataDownloader.airport_info" title="Link to this definition"></a></dt>
+<dd><p>Generates Markdown table with airport specifications.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="data_downloader.DataDownloader.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="headerlink" href="#data_downloader.DataDownloader.Config" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="data_downloader.DataDownloader.Config.arbitrary_types_allowed">
+<span class="sig-name descname"><span class="pre">arbitrary_types_allowed</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#data_downloader.DataDownloader.Config.arbitrary_types_allowed" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">OPENAI_API_KEY</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd><p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<cite>ValidationError</cite>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><cite>self</cite> is explicitly positional-only to allow <cite>self</cite> as a field name.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="data_downloader.DataDownloader._abc_impl">
+<span class="sig-name descname"><span class="pre">_abc_impl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#data_downloader.DataDownloader._abc_impl" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">aircraft_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">aircraft_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
+<dd><p>Retrieves information about a specified aircraft using a language
+model and prints it in Markdown format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>aircraft_name</strong> (<em>(</em><em>str</em><em>)</em>) – The name of the aircraft to retrieve information for.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the specified aircraft name is not in the list of known aircrafts.:</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>result</strong> – A string containing a Markdown-formatted table of the aircraft specifications.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">airlines_df</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DataFrame</span></em><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">airplanes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Series</span></span></span><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
+<dd><p>Returns a pandas Series of all airplanes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pd.Series</strong></p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>A Series object containing the names of all airplanes.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">airplanes_df</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DataFrame</span></em><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">airport_distance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">airport1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">airport2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
+<dd><p>Extract the latitude and longitude for the two chosen airports to then call
+the haversine_distance method which then calculates the distance of the
+chosen airports.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>airport1</strong> (<em>str</em>) – Airport out of database</p></li>
+<li><p><strong>airport2</strong> (<em>str</em>) – Airport out of database</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>lat1</strong> (<em>float, optional</em>) – Latitude of the first point</p></li>
+<li><p><strong>lon1</strong> (<em>float, optional</em>) – Longitude of the first point</p></li>
+<li><p><strong>lat2</strong> (<em>float, optional</em>) – Latitude of the second point</p></li>
+<li><p><strong>lon2</strong> (<em>float, optional</em>) – Longitude of the second point</p></li>
+<li><p><em>call haversine_distance(lat1, lon1, lat2, lon2) with output parameter</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">airport_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">airport_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
+<dd><p>Retrieves information about a specified aircraft using a
+language model and prints it in Markdown format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>aircraft_name</strong> (<em>(</em><em>str</em><em>)</em>) – The name of the aircraft to retrieve information for.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the specified aircraft name is not in the list of known aircrafts.:</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>result</strong> – A string containing a Markdown-formatted table of the aircraft specifications.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id8">
+<span class="sig-name descname"><span class="pre">airports</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Series</span></span></span><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
+<dd><p>Returns a pandas Series of all airports.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pd.Series</strong></p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>A Series object containing the names of all airports.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id9">
+<span class="sig-name descname"><span class="pre">airports_df</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DataFrame</span></em><a class="headerlink" href="#id9" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id10">
+<span class="sig-name descname"><span class="pre">data_url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#id10" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id11">
+<span class="sig-name descname"><span class="pre">distance_analysis</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#id11" title="Link to this definition"></a></dt>
+<dd><p>Plot the distribution of flight distances for all flights.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id12">
+<span class="sig-name descname"><span class="pre">download_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#id12" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id13">
+<span class="sig-name descname"><span class="pre">downloads_dir</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#id13" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id14">
+<span class="sig-name descname"><span class="pre">file_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#id14" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id15">
+<span class="sig-name descname"><span class="pre">initialize_downloader</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#id15" title="Link to this definition"></a></dt>
+<dd><p>Handle downloading, unzipping, and loading data.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id16">
+<span class="sig-name descname"><span class="pre">llm</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Any</span></em><a class="headerlink" href="#id16" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id17">
+<span class="sig-name descname"><span class="pre">load_datasets</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#id17" title="Link to this definition"></a></dt>
+<dd><p>Load datasets into pandas DataFrames.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="data_downloader.DataDownloader.model_computed_fields">
+<span class="sig-name descname"><span class="pre">model_computed_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ComputedFieldInfo</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#data_downloader.DataDownloader.model_computed_fields" title="Link to this definition"></a></dt>
+<dd><p>A dictionary of computed field names and their corresponding <cite>ComputedFieldInfo</cite> objects.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="data_downloader.DataDownloader.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'arbitrary_types_allowed':</span> <span class="pre">True}</span></em><a class="headerlink" href="#data_downloader.DataDownloader.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="data_downloader.DataDownloader.model_fields">
+<span class="sig-name descname"><span class="pre">model_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">FieldInfo</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'OPENAI_API_KEY':</span> <span class="pre">FieldInfo(annotation=Union[str,</span> <span class="pre">NoneType],</span> <span class="pre">required=False),</span> <span class="pre">'airlines_df':</span> <span class="pre">FieldInfo(annotation=DataFrame,</span> <span class="pre">required=False),</span> <span class="pre">'airplanes_df':</span> <span class="pre">FieldInfo(annotation=DataFrame,</span> <span class="pre">required=False),</span> <span class="pre">'airports_df':</span> <span class="pre">FieldInfo(annotation=DataFrame,</span> <span class="pre">required=False),</span> <span class="pre">'data_url':</span> <span class="pre">FieldInfo(annotation=str,</span> <span class="pre">required=True),</span> <span class="pre">'downloads_dir':</span> <span class="pre">FieldInfo(annotation=str,</span> <span class="pre">required=False,</span> <span class="pre">default_factory=&lt;lambda&gt;),</span> <span class="pre">'file_name':</span> <span class="pre">FieldInfo(annotation=str,</span> <span class="pre">required=True),</span> <span class="pre">'llm':</span> <span class="pre">FieldInfo(annotation=Any,</span> <span class="pre">required=False),</span> <span class="pre">'routes_df':</span> <span class="pre">FieldInfo(annotation=DataFrame,</span> <span class="pre">required=False),</span> <span class="pre">'zip_dir':</span> <span class="pre">FieldInfo(annotation=str,</span> <span class="pre">required=False,</span> <span class="pre">default_factory=&lt;lambda&gt;)}</span></em><a class="headerlink" href="#data_downloader.DataDownloader.model_fields" title="Link to this definition"></a></dt>
+<dd><p>Metadata about the fields defined on the model,
+mapping of field names to [<cite>FieldInfo</cite>][pydantic.fields.FieldInfo].</p>
+<p>This replaces <cite>Model.__fields__</cite> from Pydantic V1.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id18">
+<span class="sig-name descname"><span class="pre">plot_airports_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">country</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#id18" title="Link to this definition"></a></dt>
+<dd><p>Plot a map with the locations of airports in the specified country.</p>
+<p>Parameters:
+- country (str): Name of the country.</p>
+<p>Returns:
+- None</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="data_downloader.DataDownloader.plot_country_flights">
+<span class="sig-name descname"><span class="pre">plot_country_flights</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">country</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff_distance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">internal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#data_downloader.DataDownloader.plot_country_flights" title="Link to this definition"></a></dt>
+<dd><p>Plot flight routes within a specific country based on the given cutoff distance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>str</strong><strong>)</strong> (<em>country _</em>) – The country for which to plot the flight routes.</p></li>
+<li><p><strong>cutoff_distance</strong> (<em>(</em><em>float</em><em>)</em>) – The distance cutoff between short-haul and long-haul flights.</p></li>
+<li><p><strong>internal</strong> (<em>(</em><em>bool</em><em>)</em>) – Flag to indicate whether to consider only internal flights within the country.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id19">
+<span class="sig-name descname"><span class="pre">plot_flights</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">airport</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">internal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#id19" title="Link to this definition"></a></dt>
+<dd><p>Plots a map highlighting flight routes from a specified airport,
+optionally focusing on internal routes within the same country.
+It also visualizes the locations of all airports in the country
+of the specified airport, with the specified airport marked distinctly.
+If ‘internal’ is set to True, only flight routes within the country
+are shown; otherwise, all flights from the airport are plotted. The
+map is zoomed in on the country if ‘internal’ is True.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>airport</strong> (<em>(</em><em>str</em><em>)</em>) – IATA code of the airport from which flights are plotted.</p></li>
+<li><p><strong>internal</strong> (<em>(</em><em>bool</em><em>)</em>) – If True, only flights within the airport’s country are
+plotted. If False, all flights from the airport are plotted.
+Defaults to False.</p></li>
+<li><p><strong>(</strong><strong>matplotlib.figure.Figure</strong> (<em>-fig</em>) – to use for the plot. If None, a new figure is created. Defaults to None.</p></li>
+<li><p><strong>optional</strong><strong>)</strong> (<em>An existing axes</em>) – to use for the plot. If None, a new figure is created. Defaults to None.</p></li>
+<li><p><strong>(</strong><strong>matplotlib.axes._subplots.AxesSubplot</strong> (<em>-ax</em>) – </p></li>
+<li><p><strong>optional</strong><strong>)</strong> – </p></li>
+<li><p><strong>None</strong> (<em>object to use for the plot. If</em>) – </p></li>
+<li><p><strong>the</strong> (<em>a new axes object is created on</em>) – </p></li>
+<li><p><strong>None.</strong> (<em>provided</em><em> or </em><em>new figure. Defaults to</em>) – </p></li>
+<li><p><strong>Returns</strong> – </p></li>
+<li><p><strong>None</strong> – The function directly plots the map with matplotlib and does not return any value.</p></li>
+<li><p><strong>'airports_df'</strong> (<em>This method requires that the class has access to a DataFrame</em>) – </p></li>
+<li><p><strong>information</strong> (<em>containing airport</em>) – </p></li>
+<li><p><strong>codes</strong> (<em>including 'IATA'</em>) – </p></li>
+<li><p><strong>'Latitude'</strong> – </p></li>
+<li><p><strong>'Longitude'</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+<p>:param :
+:param and ‘Country’:
+:param and a DataFrame ‘routes_df’ containing route information with:
+:param columns for ‘Source airport’ and ‘Destination airport’ IATA codes.:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id20">
+<span class="sig-name descname"><span class="pre">plot_top_airplane_models</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">countries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#id20" title="Link to this definition"></a></dt>
+<dd><p>Plot the N most used airplane models by number of routes.
+If countries are specified, plot only for those countries.
+If countries is None, plot for all dataset.
+:param countries: List of country names or None.
+:param n: Number of top airplane models to plot.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id21">
+<span class="sig-name descname"><span class="pre">routes_df</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DataFrame</span></em><a class="headerlink" href="#id21" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id22">
+<span class="sig-name descname"><span class="pre">setup_directories</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#id22" title="Link to this definition"></a></dt>
+<dd><p>Create necessary directories.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id23">
+<span class="sig-name descname"><span class="pre">unzip_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#id23" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id24">
+<span class="sig-name descname"><span class="pre">validate_api_key</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#id24" title="Link to this definition"></a></dt>
+<dd><p>Validate the presence of an API key.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id25">
+<span class="sig-name descname"><span class="pre">zip_dir</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#id25" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="modules.html" class="btn btn-neutral float-left" title="python_files" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="distance_function.html" class="btn btn-neutral float-right" title="distance_function module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, S. Sergeevna (58449), B. Schmidt (59599), T. Goering (58535).</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
