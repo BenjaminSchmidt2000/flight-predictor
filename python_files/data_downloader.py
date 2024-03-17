@@ -303,90 +303,133 @@ class DataDownloader(BaseModel):
         plt.tight_layout()
         plt.show()
 
-    def plot_country_flights(self, country, internal=False) -> None:
+    def plot_country_flights(self, country, cutoff_distance: float, internal=False) -> None:
         """
-        Plot flights leaving or arriving in the specified country.
-        :param country: Name of the country.
-        :param internal: If True, plot only internal flights; otherwise, plot all flights.
+        Plot flight routes within a specific country based on the given cutoff distance.
+
+        Args:
+            country (str): The country for which to plot the flight routes.
+            cutoff_distance (float): The distance cutoff between short-haul and long-haul flights.
+            internal (bool): Flag to indicate whether to consider only internal flights within the country.
+
+        Returns:
+            None
         """
         # Filter routes based on internal flag
         if internal:
             filtered_routes = self.routes_df[
-                (
-                    self.routes_df["Source airport"].isin(
-                        self.airports_df[self.airports_df["Country"] == country]["IATA"]
-                    )
-                )
-                & (
-                    self.routes_df["Destination airport"].isin(
-                        self.airports_df[self.airports_df["Country"] == country]["IATA"]
-                    )
-                )
+                (self.routes_df["Source airport"].isin(self.airports_df[self.airports_df["Country"] == country]  ["IATA"]))
+                & (self.routes_df["Destination airport"].isin(self.airports_df[self.airports_df["Country"] == country]["IATA"]))
             ]
         else:
             filtered_routes = self.routes_df[
-                (
-                    self.routes_df["Source airport"].isin(
-                        self.airports_df[self.airports_df["Country"] == country]["IATA"]
-                    )
-                )
-                | (
-                    self.routes_df["Destination airport"].isin(
-                        self.airports_df[self.airports_df["Country"] == country]["IATA"]
-                    )
-                )
+                (self.routes_df["Source airport"].isin(self.airports_df[self.airports_df["Country"] == country]["IATA"]))
+                | (self.routes_df["Destination airport"].isin(self.airports_df[self.airports_df["Country"] == country]["IATA"]))
             ]
 
         # Plotting
         fig, ax = plt.subplots(figsize=(10, 8))
         world = gpd.read_file(gpd.datasets.get_path("naturalearth_lowres"))
         world.plot(ax=ax, color="lightgrey")
+        
+        short_haul_params = {
+                    'a': 0.00016,
+                    'b': 1.454,
+                    'c': 1531.722
+                }
 
-        # ... existing code ...
+        long_haul_params = {
+                    'a': 0.00034,
+                    'b': 6.112,
+                    'c': 3403.041
+                }
+                
+        short_haul_count = 0
+        short_haul_distance = 0
+        total_flight_emissions_short = 0
+        total_flight_emissions_long = 0
+        processed_routes = set()
+        
+        # Define parameters for emission reduction by rail
+        rail_emissions_ratio = 0.14
+        
         for index, row in filtered_routes.iterrows():
-            source_filtered = self.airports_df[
-                self.airports_df["IATA"] == row["Source airport"]
-            ]
-            dest_filtered = self.airports_df[
-                self.airports_df["IATA"] == row["Destination airport"]
-            ]
+            source_airport = row["Source airport"]
+            destination_airport = row["Destination airport"]
+            
+            # Create a tuple representing the route pair
+            route_pair = tuple(sorted([source_airport, destination_airport]))
 
-            if not source_filtered.empty and not dest_filtered.empty:
-                source = source_filtered.iloc[0]
-                dest = dest_filtered.iloc[0]
-                # Adjust the linewidth parameter here to make the lines thinner
-                ax.plot(
-                    [source["Longitude"], dest["Longitude"]],
-                    [source["Latitude"], dest["Latitude"]],
-                    color="blue",
-                    linewidth=0.5,
-                )  # for example, using 0.5 makes the line thinner
-            else:
-                print(
-                    f"Route from {row['Source airport']} to {row['Destination airport']} skipped due to missing airport data."
+            # Check if this route pair has already been processed
+            if route_pair in processed_routes:
+                continue
+
+            processed_routes.add(route_pair)
+    
+            source_info = self.airports_df[self.airports_df["IATA"] == source_airport]
+            destination_info = self.airports_df[self.airports_df["IATA"] == destination_airport]
+
+            if not source_info.empty and not destination_info.empty:
+                source_coords = (
+                    float(source_info.iloc[0]["Latitude"]),
+                    float(source_info.iloc[0]["Longitude"])
                 )
-        # ... remaining code ...
+                destination_coords = (
+                    float(destination_info.iloc[0]["Latitude"]),
+                    float(destination_info.iloc[0]["Longitude"])
+                )
+
+                distance = haversine_distance(*source_coords, *destination_coords)
+
+                if distance > cutoff_distance:  # Check cutoff distance for defining short-haul flights
+                    color = "orangered"  # Color for long-haul flights
+                else:
+                    color = "dodgerblue"  # Color for short-haul flights
+                    
+
+                if distance <= cutoff_distance:  # Short-haul flights
+                    short_haul_count += 1
+                    short_haul_distance += distance
+                    params = short_haul_params
+                    co2_emissions_short = params['a'] * distance ** 2 + params['b'] * distance + params['c']
+                    total_flight_emissions_short += co2_emissions_short
+                else:
+                    params = long_haul_params
+                    co2_emissions_long = params['a'] * distance ** 2 + params['b'] * distance + params['c']
+                    total_flight_emissions_long += co2_emissions_long
+
+                # Plot the flight route with the adjusted color
+                ax.plot([source_coords[1], destination_coords[1]], [source_coords[0], destination_coords[0]], color=color, linewidth=2, alpha=0.5) 
+    
+            else:
+                print(f"Route from {row['Source airport']} to {row['Destination airport']} skipped due to missing airport data.")
 
         # Plot airports
         airports_in_country = self.airports_df[self.airports_df["Country"] == country]
-        ax.scatter(
-            airports_in_country["Longitude"],
-            airports_in_country["Latitude"],
-            color="red",
-            s=25,
-            label="Airport",
-        )
+        ax.scatter(airports_in_country["Longitude"], airports_in_country["Latitude"], color="red", s=25, label="Airport")
 
         ax.set_title(f'{"Internal" if internal else "All"} Flights in {country}')
         ax.legend()
+        
+        # Calculate emission reduction for short-haul flights
+        emission_reduction = total_flight_emissions_short * rail_emissions_ratio
+        total_emissions_without_reduction = total_flight_emissions_short + total_flight_emissions_long
+        total_flight_emissions = total_emissions_without_reduction- emission_reduction
+        
+        # Calculate the difference in emissions in percentage and absolute values
+        emission_difference_percent = ((total_emissions_without_reduction - total_flight_emissions) / total_emissions_without_reduction) * 100
+        emission_difference_abs = total_emissions_without_reduction - total_flight_emissions
 
-        # Optionally, add basemap with contextily
-        ctx.add_basemap(
-            ax, source=ctx.providers.CartoDB.Positron, crs=world.crs.to_string()
-        )
+        # Plot the calculations as annotations
+        annotation_text = f"Short-Haul Flights: {short_haul_count}\nTotal Short-Haul Distance: {round(short_haul_distance, 2)} km\n"\
+                  f"Emission Reduction with Rail Services: {emission_reduction:.2f} units\n"\
+                  f"Emission Difference (Percentage): {emission_difference_percent:.2f}%\n"\
+                  f"Emission Difference (Absolute): {emission_difference_abs:.2f} kg"
 
+        plt.annotate(annotation_text, xy=(0.05, 0.05), xycoords='axes fraction', fontsize=12, bbox=dict(facecolor='white', alpha=0.8))
         plt.show()
-
+    
+    
     def airplanes(self) -> pd.Series:
         """
         Returns a pandas Series of all airplanes.
