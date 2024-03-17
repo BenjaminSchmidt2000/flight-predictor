@@ -1,7 +1,8 @@
+"""Module for calculating distances between two points on Earth."""
 import math
 from typing import Union
 
-def haversine_distance(lat1: Union[int, float], lon1: Union[int, float], 
+def haversine_distance(lat1: Union[int, float], lon1: Union[int, float],
                        lat2: Union[int, float], lon2: Union[int, float]) -> float:
     """
     Calculate the Haversine distance between two sets of latitude and longitude coordinates.
