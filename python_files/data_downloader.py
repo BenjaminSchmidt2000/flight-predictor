@@ -142,7 +142,7 @@ class DataDownloader(BaseModel):
             return
 
         world = gpd.read_file(gpd.datasets.get_path("naturalearth_lowres"))
-        ax = world.plot(color="white", edgecolor="black", figsize=(10, 6))
+        ax = world.plot(edgecolor="black", color="lightgrey", figsize=(10, 6))
 
         country_map = gpd.GeoDataFrame(
             country_airports,
@@ -151,6 +151,10 @@ class DataDownloader(BaseModel):
             ),
         )
         country_map.plot(ax=ax, color="red", markersize=10)
+        country_geometry = world[world['name'] == country]['geometry'].iloc[0]
+        minx, miny, maxx, maxy = country_geometry.bounds
+        ax.set_xlim(minx, maxx)
+        ax.set_ylim(miny, maxy)
         plt.title(f"Airports in {country}")
         plt.xlabel("Longitude")
         plt.ylabel("Latitude")
@@ -185,79 +189,82 @@ class DataDownloader(BaseModel):
         plt.title("Distribution of Flight Distances")
         plt.show()
 
+
     def plot_flights(self, airport, internal=False, fig=None, ax=None) -> None:
         """
-        Plot flights leaving the specified airport.
+        Plots a map highlighting flight routes from a specified airport, optionally focusing on internal routes within the same country. It also visualizes the locations of all airports in the country of the specified airport, with the specified airport marked distinctly. If 'internal' is set to True, only flight routes within the country are shown; otherwise, all flights from the airport are plotted. The map is zoomed in on the country if 'internal' is True.
 
         Parameters:
-        - airport (str): IATA code of the airport.
-        - internal (bool): If True, plot only flights within the same country. Default is False.
-        - fig (plt.figure, optional): Existing figure object to use for the plot.
-        - ax (plt.axes, optional): Existing axes object to use for the plot.
+        - airport (str): IATA code of the airport from which flights are plotted.
+        - internal (bool): If True, only flights within the airport's country are plotted. If False, all flights from the airport are plotted. Defaults to False.
+        - fig (matplotlib.figure.Figure, optional): An existing figure object to use for the plot. If None, a new figure is created. Defaults to None.
+        - ax (matplotlib.axes._subplots.AxesSubplot, optional): An existing axes object to use for the plot. If None, a new axes object is created on the provided or new figure. Defaults to None.
 
         Returns:
-        - plt.figure: Figure object containing the plot.
-        - plt.axes: Axes object containing the plot.
+        - None: The function directly plots the map with matplotlib and does not return any value.
+        
+        This method requires that the class has access to a DataFrame 'airports_df' containing airport information, including 'IATA' codes, 'Latitude', 'Longitude', and 'Country', and a DataFrame 'routes_df' containing route information with columns for 'Source airport' and 'Destination airport' IATA codes.
         """
         if fig is None or ax is None:
             fig, ax = plt.subplots(figsize=(10, 8))
 
         world = gpd.read_file(gpd.datasets.get_path("naturalearth_lowres"))
 
-        airport_point = Point(
-            self.airports_df[self.airports_df["IATA"] == airport]["Longitude"].iloc[0],
-            self.airports_df[self.airports_df["IATA"] == airport]["Latitude"].iloc[0],
-        )
+        # Fetching airport coordinates and country
+        airport_data = self.airports_df[self.airports_df["IATA"] == airport].iloc[0]
+        airport_point = Point(airport_data["Longitude"], airport_data["Latitude"])
+        airport_country = airport_data["Country"]
+
+        # Filter all airports in the country
+        country_airports = self.airports_df[self.airports_df["Country"] == airport_country]
+
+        # Plot title and filtering routes
+        if internal:
+            ax.set_title(f"Internal Flights from {airport}")
+            internal_routes = self.routes_df[
+                (self.routes_df["Source airport"] == airport) & 
+                (self.routes_df["Destination airport"].isin(
+                    self.airports_df[self.airports_df["Country"] == airport_country]["IATA"]))
+            ]
+            routes_to_plot = internal_routes.merge(
+                self.airports_df[["IATA", "Latitude", "Longitude", "Country"]],
+                left_on="Destination airport",
+                right_on="IATA",
+                how="inner",
+            )
+        else:
+            ax.set_title(f"All Flights from {airport}")
+            all_routes = self.routes_df[self.routes_df["Source airport"] == airport]
+            routes_to_plot = all_routes.merge(
+                self.airports_df[["IATA", "Latitude", "Longitude", "Country"]],
+                left_on="Destination airport",
+                right_on="IATA",
+                how="inner",
+            )
+
+        world.plot(ax=ax, edgecolor="black", color="lightgrey")
+
+        # Plot all airports in the country
+        for _, airport_row in country_airports.iterrows():
+            ax.plot(airport_row["Longitude"], airport_row["Latitude"], "ro", markersize=5)
+
+        # Plot the specific airport with a different symbol or color
+        ax.plot(airport_point.x, airport_point.y, "yo", markersize=10, label="Selected Airport")
+
+        for _, route in routes_to_plot.iterrows():
+            route_line = LineString([(airport_point.x, airport_point.y), (route["Longitude"], route["Latitude"])])
+            ax.plot(*route_line.xy, "b-")
 
         if internal:
-            airport_country = self.airports_df[self.airports_df["IATA"] == airport][
-                "Country"
-            ].iloc[0]
-            internal_routes = self.routes_df[
-                (self.routes_df["Source airport"] == airport)
-                & (
-                    self.routes_df["Destination airport"].isin(
-                        self.airports_df[
-                            self.airports_df["Country"] == airport_country
-                        ]["IATA"]
-                    )
-                )
-            ]
-            internal_routes = internal_routes.merge(
-                self.airports_df[["IATA", "Latitude", "Longitude", "Country"]],
-                left_on="Destination airport",
-                right_on="IATA",
-                how="inner",
-            )
-
-            ax.set_title(f"Internal Flights from {airport}")
-        else:
-            all_routes = self.routes_df[self.routes_df["Source airport"] == airport]
-            all_routes = all_routes.merge(
-                self.airports_df[["IATA", "Latitude", "Longitude", "Country"]],
-                left_on="Destination airport",
-                right_on="IATA",
-                how="inner",
-            )
-
-            ax.set_title(f"All Flights from {airport}")
-
-        world.plot(ax=ax, color="lightgrey")
-        ax.plot(airport_point.x, airport_point.y, "ro", markersize=5, label="Airport")
-
-        for _, route in (
-            internal_routes.iterrows() if internal else all_routes.iterrows()
-        ):
-            route_line = LineString(
-                [
-                    (airport_point.x, airport_point.y),
-                    (route["Longitude"], route["Latitude"]),
-                ]
-            )
-            ax.plot(*route_line.xy, "b-")
+            # Zoom in on the country of the airport
+            country_geometry = world[world['name'] == airport_country]['geometry'].iloc[0]
+            minx, miny, maxx, maxy = country_geometry.bounds
+            ax.set_xlim(minx, maxx)
+            ax.set_ylim(miny, maxy)
 
         ax.legend()
         return fig, ax
+
 
     def plot_top_airplane_models(self, countries=None, n=5) -> None:
         """
@@ -315,6 +322,9 @@ class DataDownloader(BaseModel):
         Returns:
             None
         """
+
+        # Fetching airport coordinates and country
+
         # Filter routes based on internal flag
         if internal:
             filtered_routes = self.routes_df[
@@ -330,7 +340,7 @@ class DataDownloader(BaseModel):
         # Plotting
         fig, ax = plt.subplots(figsize=(10, 8))
         world = gpd.read_file(gpd.datasets.get_path("naturalearth_lowres"))
-        world.plot(ax=ax, color="lightgrey")
+        world.plot(ax=ax, edgecolor="black", color="lightgrey")
         
         short_haul_params = {
                     'a': 0.00016,
@@ -426,6 +436,13 @@ class DataDownloader(BaseModel):
                   f"Emission Difference (Percentage): {emission_difference_percent:.2f}%\n"\
                   f"Emission Difference (Absolute): {emission_difference_abs:.2f} kg"
 
+        if internal:
+            # Zoom in on the country of the airport
+            country_geometry = world[world['name'] == country]['geometry'].iloc[0]
+            minx, miny, maxx, maxy = country_geometry.bounds
+            ax.set_xlim(minx, maxx)
+            ax.set_ylim(miny, maxy)
+
         plt.annotate(annotation_text, xy=(0.05, 0.05), xycoords='axes fraction', fontsize=12, bbox=dict(facecolor='white', alpha=0.8))
         plt.show()
     
@@ -454,7 +471,6 @@ class DataDownloader(BaseModel):
         """
         aircraft_name_normalized = aircraft_name.strip().lower()
         all_aircraft_names_normalized = self.airplanes().str.strip().str.lower()
-
         if aircraft_name_normalized not in all_aircraft_names_normalized.values:
             raise ValueError(
                 f"{aircraft_name} is not a valid aircraft name. Please choose from the following: {', '.join(self.airplanes())}"
