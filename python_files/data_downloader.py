@@ -11,7 +11,6 @@ from zipfile import ZipFile
 from pydantic import BaseModel, Field
 import math
 from .distance_function import haversine_distance
-import contextily as ctx
 from IPython.display import Markdown
 import openai
 from langchain_openai import OpenAI
