@@ -78,6 +78,76 @@ class DataDownloader(BaseModel):
     OPENAI_API_KEY: Optional[str] = None
     llm: Any = None
 
+    """
+    A class for downloading, extracting, loading, and analyzing aviation data,
+    covering airlines, airplanes, airports, and flight routes. It integrates
+    data management and spatial analysis functionalities for environmental
+    impact assessment and data visualization.
+
+    Attributes
+    ----------
+    data_url : str
+        URL to download the dataset.
+    file_name : str
+        Name of the file to download.
+    downloads_dir : str
+        Path to store downloaded files. Defaults to 'downloads' in the current
+        working directory.
+    zip_dir : str
+        Path for extracted zip contents. Defaults to 'zip_files' subdirectory
+        within 'downloads_dir'.
+    airlines_df : pd.DataFrame
+        DataFrame with airlines data.
+    airplanes_df : pd.DataFrame
+        DataFrame with airplanes data.
+    airports_df : pd.DataFrame
+        DataFrame with airports data.
+    routes_df : pd.DataFrame
+        DataFrame with routes data.
+    OPENAI_API_KEY : Optional[str]
+        OpenAI API key for language model integration. Default is None.
+    llm : Any
+        Language model client, initialized with OpenAI API key.
+
+    Methods
+    -------
+    __init__(**data: Any)
+        Initializes the instance, sets up directories and data loaders.
+    setup_directories()
+        Creates directories for downloads and extracted files.
+    initialize_downloader()
+        Manages downloading, unzipping data files, and initializes the language
+        model client.
+    download_data()
+        Downloads the data file from the specified URL.
+    unzip_data()
+        Extracts the downloaded zip file's contents.
+    load_datasets()
+        Loads CSV data into pandas DataFrames.
+    validate_api_key()
+        Checks for OpenAI API key and initializes the language model client.
+    airport_distance(airport1: str = "", airport2: str = "")
+        Calculates distance between two airports.
+    plot_airports_map(country: str = "")
+        Generates a map of airports in a specified country.
+    distance_analysis()
+        Analyzes distribution of flight distances.
+    plot_flights(airport: str, internal: bool = False, fig=None, ax=None)
+        Plots flight routes from a specified airport.
+    plot_top_airplane_models(countries=None, n: int = 5)
+        Visualizes top N airplane models by route number.
+    plot_country_flights(country: str, cutoff_distance: float, 
+                          internal: bool = False)
+        Plots flight routes within a specific country.
+    airplanes()
+        Returns a Series of airplane names.
+    aircraft_info(aircraft_name: str)
+        Generates Markdown table with aircraft specifications.
+    airports()
+        Returns a Series of airport names.
+    airport_info(airport_name: str)
+        Generates Markdown table with airport specifications.
+    """
     class Config:
         arbitrary_types_allowed = True
 
