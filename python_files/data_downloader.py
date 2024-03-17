@@ -41,7 +41,7 @@ Dependencies:
 - openai and langchain_openai for integrating language model capabilities.
 """
 
-import warnings
+
 import os
 import pandas as pd
 import geopandas as gpd
@@ -52,14 +52,11 @@ from urllib.request import urlretrieve
 from zipfile import ZipFile
 from pydantic import BaseModel, Field
 import math
-from .distance_function import haversine_distance
+from python_files.distance_function import haversine_distance
 from IPython.display import Markdown
 import openai
 from langchain_openai import OpenAI
 from typing import Optional, Any
-
-
-warnings.filterwarnings("ignore")
 
 
 class DataDownloader(BaseModel):
