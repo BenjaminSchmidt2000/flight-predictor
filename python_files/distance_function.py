@@ -5,16 +5,23 @@ from typing import Union
 def haversine_distance(lat1: Union[int, float], lon1: Union[int, float],
                        lat2: Union[int, float], lon2: Union[int, float]) -> float:
     """
-    Calculate the Haversine distance between two sets of latitude and longitude coordinates.
-    
-    Parameters:
-    - lat1 (float | int): Latitude of the first point.
-    - lon1 (float | int): Longitude of the first point.
-    - lat2 (float | int): Latitude of the second point.
-    - lon2 (float | int): Longitude of the second point.
-    
-    Returns:
-    - float: Haversine distance in kilometers.
+    Calculate the Haversine distance between two sets of latitude and longitude coordinates
+
+    Parameters
+    ---------------
+    lat1 : float
+        Latitude of the first point
+    lon1 : float
+        Longitude of the first point
+    lat2 : float
+        Latitude of the second point
+    lon2 : float
+        Longitude of the second point
+
+    Returns
+    ---------------
+    float
+        Haversine distance in kilometers
     """
 
     R = 6371  # Radius of the Earth in kilometers
