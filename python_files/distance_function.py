@@ -24,15 +24,15 @@ def haversine_distance(lat1: Union[int, float], lon1: Union[int, float],
         Haversine distance in kilometers
     """
 
-    R = 6371  # Radius of the Earth in kilometers
+    RADIUS = 6371  # Radius of the Earth in kilometers
     dlat = math.radians(lat2 - lat1)
     dlon = math.radians(lon2 - lon1)
-    a = (
+    a_term = (
         math.sin(dlat / 2) ** 2
         + math.cos(math.radians(lat1))
         * math.cos(math.radians(lat2))
         * math.sin(dlon / 2) ** 2
     )
-    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
-    distance = R * c
+    c_term = 2 * math.atan2(math.sqrt(a_term), math.sqrt(1 - a_term))
+    distance = RADIUS * c_term
     return distance

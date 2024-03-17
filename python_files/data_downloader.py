@@ -1,5 +1,47 @@
-import warnings
+"""
+This module provides a comprehensive toolkit for the analysis
+and visualization of aviation data, including airports, aircraft,
+and flight routes. It is designed to facilitate the downloading
+and processing of relevant datasets, perform spatial and
+quantitative analyses, and generate insightful visualizations
+to understand patterns in flight routes, aircraft usage, and more.
 
+Key Features:
+- DataDownloader: A class for automating the downloading,
+    extraction, and loading of aviation-related datasets.
+- Analysis and Visualization: Functions for calculating
+    distances between airports, plotting flight routes on
+    geographical maps, analyzing the distribution of flight
+    distances, and visualizing the most used airplane models.
+- Environmental Impact Analysis: Tools to estimate emission
+    reductions from substituting short-haul flights with rail
+    services, including both percentage and absolute
+    difference calculations.
+- Language Model Integration: Utilizes OpenAI's language
+    models to generate Markdown-formatted tables containing
+    specifications and information for specified aircraft
+    and airports, enhancing the accessibility and
+    comprehensibility of complex data.
+- Utility Functions: A set of functions to retrieve and
+    process data about airplanes and airports from the
+    loaded datasets.
+
+Intended Use:
+This module is intended for researchers, analysts, and
+enthusiasts in the field of aviation and environmental
+studies. It provides a robust framework for exploring
+aviation data, with a particular focus on environmental
+impact assessments and the promotion of alternative,
+greener modes of transportation.
+
+Dependencies:
+- pandas and geopandas for data handling and spatial analysis.
+- matplotlib and shapely for visualization and geometric operations.
+- pydantic for data validation.
+- openai and langchain_openai for integrating language model capabilities.
+"""
+
+import warnings
 import os
 import pandas as pd
 import geopandas as gpd
@@ -105,16 +147,28 @@ class DataDownloader(BaseModel):
 
     def airport_distance(self, airport1: str = "", airport2: str = "") -> None:
         """
-        Extract the latitude and longitude for the two chosen airports to then call the haversine_distance method
-        which then calculates the distance of the chosen airports.
-        input:
-        -param airport1
-        -param airport2
-        output:
-        -param lat1: Latitude of the first point.
-        -param lon1: Longitude of the first point.
-        -param lat2: Latitude of the second point.
-        -param lon2: Longitude of the second point.
+        Extract the latitude and longitude for the two chosen airports to then call 
+        the haversine_distance method which then calculates the distance of the 
+        chosen airports.
+
+        Parameters
+        ----------------------
+        airport1: str
+            Airport out of database
+        airport2: str
+            Airport out of database
+            
+        Returns
+        ---------------------
+        lat1 : float, optional
+            Latitude of the first point
+        lon1 : float, optional
+            Longitude of the first point
+        lat2 : float, optional
+            Latitude of the second point
+        lon2 : float, optional
+            Longitude of the second point
+        
         call haversine_distance(lat1, lon1, lat2, lon2) with output parameter
         """
         lat1: float = float(self.airports_df[self.airports_df["Name"] == airport1].iloc[0, 6])
@@ -191,18 +245,36 @@ class DataDownloader(BaseModel):
 
     def plot_flights(self, airport, internal=False, fig=None, ax=None) -> None:
         """
-        Plots a map highlighting flight routes from a specified airport, optionally focusing on internal routes within the same country. It also visualizes the locations of all airports in the country of the specified airport, with the specified airport marked distinctly. If 'internal' is set to True, only flight routes within the country are shown; otherwise, all flights from the airport are plotted. The map is zoomed in on the country if 'internal' is True.
+        Plots a map highlighting flight routes from a specified airport, 
+        optionally focusing on internal routes within the same country. 
+        It also visualizes the locations of all airports in the country 
+        of the specified airport, with the specified airport marked distinctly. 
+        If 'internal' is set to True, only flight routes within the country 
+        are shown; otherwise, all flights from the airport are plotted. The 
+        map is zoomed in on the country if 'internal' is True.
 
-        Parameters:
-        - airport (str): IATA code of the airport from which flights are plotted.
-        - internal (bool): If True, only flights within the airport's country are plotted. If False, all flights from the airport are plotted. Defaults to False.
-        - fig (matplotlib.figure.Figure, optional): An existing figure object to use for the plot. If None, a new figure is created. Defaults to None.
-        - ax (matplotlib.axes._subplots.AxesSubplot, optional): An existing axes object to use for the plot. If None, a new axes object is created on the provided or new figure. Defaults to None.
+        Parameters
+        --------------------------------------------------------------
+        airport : (str) 
+            IATA code of the airport from which flights are plotted.
+        internal : (bool) 
+            If True, only flights within the airport's country are 
+            plotted. If False, all flights from the airport are plotted. 
+            Defaults to False.
+        -fig (matplotlib.figure.Figure, optional): An existing figure object 
+         to use for the plot. If None, a new figure is created. Defaults to None.
+        -ax (matplotlib.axes._subplots.AxesSubplot, optional): An existing axes 
+        object to use for the plot. If None, a new axes object is created on the 
+        provided or new figure. Defaults to None.
 
         Returns:
-        - None: The function directly plots the map with matplotlib and does not return any value.
+        None
+            The function directly plots the map with matplotlib and does not return any value.
         
-        This method requires that the class has access to a DataFrame 'airports_df' containing airport information, including 'IATA' codes, 'Latitude', 'Longitude', and 'Country', and a DataFrame 'routes_df' containing route information with columns for 'Source airport' and 'Destination airport' IATA codes.
+        This method requires that the class has access to a DataFrame 'airports_df' 
+        containing airport information, including 'IATA' codes, 'Latitude', 'Longitude', 
+        and 'Country', and a DataFrame 'routes_df' containing route information with 
+        columns for 'Source airport' and 'Destination airport' IATA codes.
         """
         if fig is None or ax is None:
             fig, ax = plt.subplots(figsize=(10, 8))
@@ -221,8 +293,8 @@ class DataDownloader(BaseModel):
         if internal:
             ax.set_title(f"Internal Flights from {airport}")
             internal_routes = self.routes_df[
-                (self.routes_df["Source airport"] == airport) & 
-                (self.routes_df["Destination airport"].isin(
+                (self.routes_df["Source airport"] == airport)
+                & (self.routes_df["Destination airport"].isin(
                     self.airports_df[self.airports_df["Country"] == airport_country]["IATA"]))
             ]
             routes_to_plot = internal_routes.merge(
@@ -251,7 +323,8 @@ class DataDownloader(BaseModel):
         ax.plot(airport_point.x, airport_point.y, "yo", markersize=10, label="Selected Airport")
 
         for _, route in routes_to_plot.iterrows():
-            route_line = LineString([(airport_point.x, airport_point.y), (route["Longitude"], route["Latitude"])])
+            route_line = LineString([(airport_point.x, airport_point.y),
+                                     (route["Longitude"], route["Latitude"])])
             ax.plot(*route_line.xy, "b-")
 
         if internal:
@@ -313,13 +386,18 @@ class DataDownloader(BaseModel):
         """
         Plot flight routes within a specific country based on the given cutoff distance.
 
-        Args:
-            country (str): The country for which to plot the flight routes.
-            cutoff_distance (float): The distance cutoff between short-haul and long-haul flights.
-            internal (bool): Flag to indicate whether to consider only internal flights within the country.
+        Parameters
+        -------------------------------------
+        country _ (str)
+            The country for which to plot the flight routes.
+        cutoff_distance : (float)
+            The distance cutoff between short-haul and long-haul flights.
+        internal : (bool)
+            Flag to indicate whether to consider only internal flights within the country.
 
-        Returns:
-            None
+        Returns
+        ------------------------------
+        None
         """
 
         # Fetching airport coordinates and country
@@ -327,20 +405,28 @@ class DataDownloader(BaseModel):
         # Filter routes based on internal flag
         if internal:
             filtered_routes = self.routes_df[
-                (self.routes_df["Source airport"].isin(self.airports_df[self.airports_df["Country"] == country]  ["IATA"]))
-                & (self.routes_df["Destination airport"].isin(self.airports_df[self.airports_df["Country"] == country]["IATA"]))
+                (self.routes_df["Source airport"].isin(
+                    self.airports_df[self.airports_df["Country"] == country]  ["IATA"])
+                )
+                & (self.routes_df["Destination airport"].isin(
+                    self.airports_df[self.airports_df["Country"] == country]["IATA"])
+                  )
             ]
         else:
             filtered_routes = self.routes_df[
-                (self.routes_df["Source airport"].isin(self.airports_df[self.airports_df["Country"] == country]["IATA"]))
-                | (self.routes_df["Destination airport"].isin(self.airports_df[self.airports_df["Country"] == country]["IATA"]))
+                (self.routes_df["Source airport"].isin(
+                    self.airports_df[self.airports_df["Country"] == country]["IATA"])
+                )
+                | (self.routes_df["Destination airport"].isin(
+                    self.airports_df[self.airports_df["Country"] == country]["IATA"])
+                  )
             ]
 
         # Plotting
         fig, ax = plt.subplots(figsize=(10, 8))
         world = gpd.read_file(gpd.datasets.get_path("naturalearth_lowres"))
         world.plot(ax=ax, edgecolor="black", color="lightgrey")
-        
+
         short_haul_params = {
                     'a': 0.00016,
                     'b': 1.454,
@@ -352,20 +438,20 @@ class DataDownloader(BaseModel):
                     'b': 6.112,
                     'c': 3403.041
                 }
-                
+
         short_haul_count = 0
         short_haul_distance = 0
         total_flight_emissions_short = 0
         total_flight_emissions_long = 0
         processed_routes = set()
-        
+
         # Define parameters for emission reduction by rail
         rail_emissions_ratio = 0.14
-        
+
         for index, row in filtered_routes.iterrows():
             source_airport = row["Source airport"]
             destination_airport = row["Destination airport"]
-            
+
             # Create a tuple representing the route pair
             route_pair = tuple(sorted([source_airport, destination_airport]))
 
@@ -374,7 +460,7 @@ class DataDownloader(BaseModel):
                 continue
 
             processed_routes.add(route_pair)
-    
+
             source_info = self.airports_df[self.airports_df["IATA"] == source_airport]
             destination_info = self.airports_df[self.airports_df["IATA"] == destination_airport]
 
@@ -390,50 +476,65 @@ class DataDownloader(BaseModel):
 
                 distance = haversine_distance(*source_coords, *destination_coords)
 
-                if distance > cutoff_distance:  # Check cutoff distance for defining short-haul flights
+                if distance > cutoff_distance:  # defining short-haul flights
                     color = "orangered"  # Color for long-haul flights
                 else:
                     color = "dodgerblue"  # Color for short-haul flights
-                    
 
                 if distance <= cutoff_distance:  # Short-haul flights
                     short_haul_count += 1
                     short_haul_distance += distance
                     params = short_haul_params
-                    co2_emissions_short = params['a'] * distance ** 2 + params['b'] * distance + params['c']
+                    co2_emissions_short = params['a'] * distance ** 2
+                    + params['b'] * distance + params['c']
                     total_flight_emissions_short += co2_emissions_short
                 else:
                     params = long_haul_params
-                    co2_emissions_long = params['a'] * distance ** 2 + params['b'] * distance + params['c']
+                    co2_emissions_long = params['a'] * distance ** 2
+                    + params['b'] * distance + params['c']
                     total_flight_emissions_long += co2_emissions_long
 
                 # Plot the flight route with the adjusted color
-                ax.plot([source_coords[1], destination_coords[1]], [source_coords[0], destination_coords[0]], color=color, linewidth=2, alpha=0.5) 
-    
+                ax.plot(
+                    [source_coords[1], destination_coords[1]],
+                    [source_coords[0], destination_coords[0]],
+                    color=color, linewidth=2, alpha=0.5
+                )
+
             else:
-                print(f"Route from {row['Source airport']} to {row['Destination airport']} skipped due to missing airport data.")
+                print(f"""Route from {row['Source airport']}
+                to {row['Destination airport']} 
+                skipped due to missing airport data.""")
 
         # Plot airports
         airports_in_country = self.airports_df[self.airports_df["Country"] == country]
-        ax.scatter(airports_in_country["Longitude"], airports_in_country["Latitude"], color="red", s=25, label="Airport")
+        ax.scatter(
+            airports_in_country["Longitude"],
+            airports_in_country["Latitude"],
+            color="red", s=25, label="Airport"
+        )
 
         ax.set_title(f'{"Internal" if internal else "All"} Flights in {country}')
         ax.legend()
-        
+
         # Calculate emission reduction for short-haul flights
         emission_reduction = total_flight_emissions_short * rail_emissions_ratio
-        total_emissions_without_reduction = total_flight_emissions_short + total_flight_emissions_long
+        total_emissions_without_reduction = total_flight_emissions_short
+        + total_flight_emissions_long
         total_flight_emissions = total_emissions_without_reduction- emission_reduction
-        
+
         # Calculate the difference in emissions in percentage and absolute values
-        emission_difference_percent = ((total_emissions_without_reduction - total_flight_emissions) / total_emissions_without_reduction) * 100
+        emission_difference_percent = ((total_emissions_without_reduction
+                                        - total_flight_emissions)
+                                       / total_emissions_without_reduction) * 100
         emission_difference_abs = total_emissions_without_reduction - total_flight_emissions
 
         # Plot the calculations as annotations
-        annotation_text = f"Short-Haul Flights: {short_haul_count}\nTotal Short-Haul Distance: {round(short_haul_distance, 2)} km\n"\
-                  f"Emission Reduction with Rail Services: {emission_reduction:.2f} units\n"\
-                  f"Emission Difference (Percentage): {emission_difference_percent:.2f}%\n"\
-                  f"Emission Difference (Absolute): {emission_difference_abs:.2f} kg"
+        annotation_text = f"Short-Haul Flights: {short_haul_count}\n"\
+        f"Total Short-Haul Distance: {round(short_haul_distance, 2)} km\n"\
+        f"Emission Reduction with Rail Services: {emission_reduction:.2f} units\n"\
+        f"Emission Difference (Percentage): {emission_difference_percent:.2f}%\n"\
+        f"Emission Difference (Absolute): {emission_difference_abs:.2f} kg"
 
         if internal:
             # Zoom in on the country of the airport
@@ -442,40 +543,50 @@ class DataDownloader(BaseModel):
             ax.set_xlim(minx, maxx)
             ax.set_ylim(miny, maxy)
 
-        plt.annotate(annotation_text, xy=(0.05, 0.05), xycoords='axes fraction', fontsize=12, bbox=dict(facecolor='white', alpha=0.8))
+        plt.annotate(annotation_text, xy=(0.05, 0.05), xycoords='axes fraction',
+                     fontsize=12, bbox=dict(facecolor='white', alpha=0.8))
         plt.show()
-    
-    
+
+
     def airplanes(self) -> pd.Series:
         """
         Returns a pandas Series of all airplanes.
 
-        Returns:
-            pd.Series: A Series object containing the names of all airplanes.
+        Returns
+        ----------------------------------------------
+        pd.Series: A Series object containing the names of all airplanes.
         """
         return self.airplanes_df["Name"]
 
     def aircraft_info(self, aircraft_name: str) -> str:
         """
-        Retrieves information about a specified aircraft using a language model and prints it in Markdown format.
+        Retrieves information about a specified aircraft using a language
+        model and prints it in Markdown format.
 
-        Parameters:
-        aircraft_name (str): The name of the aircraft to retrieve information for.
+        Parameters
+        ----------------------------------------------------------
+        aircraft_name : (str)
+            The name of the aircraft to retrieve information for.
 
-        Raises:
+        Raises
+        -----------------------------------------------------------
         ValueError: If the specified aircraft name is not in the list of known aircrafts.
 
-        Returns:
-        str: A string containing a Markdown-formatted table of the aircraft specifications.
+        Returns
+        ------------------------------------------------------------
+        result : str
+            A string containing a Markdown-formatted table of the aircraft specifications.
         """
         aircraft_name_normalized = aircraft_name.strip().lower()
         all_aircraft_names_normalized = self.airplanes().str.strip().str.lower()
         if aircraft_name_normalized not in all_aircraft_names_normalized.values:
             raise ValueError(
-                f"{aircraft_name} is not a valid aircraft name. Please choose from the following: {', '.join(self.airplanes())}"
+                f"{aircraft_name} is not a valid aircraft name."\
+                f"Please choose from the following: {', '.join(self.airplanes())}"
             )
         else:
-            prompt = f"Generate a table in Markdown format with specifications and information for the aircraft named {aircraft_name}."
+            prompt = f"Generate a table in Markdown format with"\
+            f"specifications and information for the aircraft named {aircraft_name}."
             result = self.llm(prompt)
             return Markdown(result)
 
@@ -483,32 +594,41 @@ class DataDownloader(BaseModel):
         """
         Returns a pandas Series of all airports.
 
-        Returns:
-            pd.Series: A Series object containing the names of all airports.
+        Returns
+        ------------------------------------
+        pd.Series: A Series object containing the names of all airports.
         """
         return self.airports_df["Name"]
 
     def airport_info(self, airport_name: str) -> str:
         """
-        Retrieves information about a specified aircraft using a language model and prints it in Markdown format.
+        Retrieves information about a specified aircraft using a 
+        language model and prints it in Markdown format.
 
-        Parameters:
-        aircraft_name (str): The name of the aircraft to retrieve information for.
+        Parameters
+        ----------------------------------------
+        aircraft_name : (str)
+            The name of the aircraft to retrieve information for.
 
-        Raises:
+        Raises
+        ----------------------------------------
         ValueError: If the specified aircraft name is not in the list of known aircrafts.
 
-        Returns:
-        str: A string containing a Markdown-formatted table of the aircraft specifications.
+        Returns
+        --------------------------------------------
+        result : str
+            A string containing a Markdown-formatted table of the aircraft specifications.
         """
         aircraft_name_normalized = airport_name.strip().lower()
         all_aircraft_names_normalized = self.airports().str.strip().str.lower()
 
         if aircraft_name_normalized not in all_aircraft_names_normalized.values:
             raise ValueError(
-                f"{airport_name} is not a valid aircraft name. Please choose from the following: {', '.join(self.airports())}"
+                f"{airport_name} is not a valid aircraft name."\
+                f"Please choose from the following: {', '.join(self.airports())}"
             )
         else:
-            prompt = f"Generate a table in Markdown format with specifications and information for the airport named {airport_name}."
+            prompt = f"Generate a table in Markdown format with specifications"\
+            f"and information for the airport named {airport_name}."
             result = self.llm(prompt)
             return Markdown(result)
