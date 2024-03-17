@@ -63,21 +63,6 @@ warnings.filterwarnings("ignore")
 
 
 class DataDownloader(BaseModel):
-    data_url: str
-    file_name: str
-    downloads_dir: str = Field(
-        default_factory=lambda: os.path.join(os.getcwd(), "downloads")
-    )
-    zip_dir: str = Field(
-        default_factory=lambda: os.path.join(os.getcwd(), "downloads", "zip_files")
-    )
-    airlines_df: pd.DataFrame = None
-    airplanes_df: pd.DataFrame = None
-    airports_df: pd.DataFrame = None
-    routes_df: pd.DataFrame = None
-    OPENAI_API_KEY: Optional[str] = None
-    llm: Any = None
-
     """
     A class for downloading, extracting, loading, and analyzing aviation data,
     covering airlines, airplanes, airports, and flight routes. It integrates
@@ -148,6 +133,21 @@ class DataDownloader(BaseModel):
     airport_info(airport_name: str)
         Generates Markdown table with airport specifications.
     """
+    data_url: str
+    file_name: str
+    downloads_dir: str = Field(
+        default_factory=lambda: os.path.join(os.getcwd(), "downloads")
+    )
+    zip_dir: str = Field(
+        default_factory=lambda: os.path.join(os.getcwd(), "downloads", "zip_files")
+    )
+    airlines_df: pd.DataFrame = None
+    airplanes_df: pd.DataFrame = None
+    airports_df: pd.DataFrame = None
+    routes_df: pd.DataFrame = None
+    OPENAI_API_KEY: Optional[str] = None
+    llm: Any = None
+
     class Config:
         arbitrary_types_allowed = True
 
